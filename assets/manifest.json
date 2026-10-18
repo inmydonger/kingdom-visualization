@@ -1,0 +1,796 @@
+{
+ "volumes": [
+  {
+   "volume": 1,
+   "file": "covers/vol-01.png",
+   "chapters": [
+    1,
+    8
+   ]
+  },
+  {
+   "volume": 2,
+   "file": "covers/vol-02.png",
+   "chapters": [
+    9,
+    19
+   ]
+  },
+  {
+   "volume": 3,
+   "file": "covers/vol-03.png",
+   "chapters": [
+    20,
+    30
+   ]
+  },
+  {
+   "volume": 4,
+   "file": "covers/vol-04.png",
+   "chapters": [
+    31,
+    41
+   ]
+  },
+  {
+   "volume": 5,
+   "file": "covers/vol-05.png",
+   "chapters": [
+    42,
+    52
+   ]
+  },
+  {
+   "volume": 6,
+   "file": "covers/vol-06.png",
+   "chapters": [
+    53,
+    63
+   ]
+  },
+  {
+   "volume": 7,
+   "file": "covers/vol-07.png",
+   "chapters": [
+    64,
+    74
+   ]
+  },
+  {
+   "volume": 8,
+   "file": "covers/vol-08.png",
+   "chapters": [
+    75,
+    85
+   ]
+  },
+  {
+   "volume": 9,
+   "file": "covers/vol-09.png",
+   "chapters": [
+    86,
+    96
+   ]
+  },
+  {
+   "volume": 10,
+   "file": "covers/vol-10.png",
+   "chapters": [
+    97,
+    107
+   ]
+  },
+  {
+   "volume": 11,
+   "file": "covers/vol-11.png",
+   "chapters": [
+    108,
+    118
+   ]
+  },
+  {
+   "volume": 12,
+   "file": "covers/vol-12.png",
+   "chapters": [
+    119,
+    129
+   ]
+  },
+  {
+   "volume": 13,
+   "file": "covers/vol-13.png",
+   "chapters": [
+    130,
+    140
+   ]
+  },
+  {
+   "volume": 14,
+   "file": "covers/vol-14.png",
+   "chapters": [
+    141,
+    151
+   ]
+  },
+  {
+   "volume": 15,
+   "file": "covers/vol-15.png",
+   "chapters": [
+    152,
+    162
+   ]
+  },
+  {
+   "volume": 16,
+   "file": "covers/vol-16.png",
+   "chapters": [
+    163,
+    173
+   ]
+  },
+  {
+   "volume": 17,
+   "file": "covers/vol-17.png",
+   "chapters": [
+    174,
+    184
+   ]
+  },
+  {
+   "volume": 18,
+   "file": "covers/vol-18.png",
+   "chapters": [
+    185,
+    195
+   ]
+  },
+  {
+   "volume": 19,
+   "file": "covers/vol-19.png",
+   "chapters": [
+    196,
+    206
+   ]
+  },
+  {
+   "volume": 20,
+   "file": "covers/vol-20.png",
+   "chapters": [
+    207,
+    217
+   ]
+  },
+  {
+   "volume": 21,
+   "file": "covers/vol-21.png",
+   "chapters": [
+    218,
+    228
+   ]
+  },
+  {
+   "volume": 22,
+   "file": "covers/vol-22.png",
+   "chapters": [
+    229,
+    239
+   ]
+  },
+  {
+   "volume": 23,
+   "file": "covers/vol-23.png",
+   "chapters": [
+    240,
+    250
+   ]
+  },
+  {
+   "volume": 24,
+   "file": "covers/vol-24.png",
+   "chapters": [
+    251,
+    261
+   ]
+  },
+  {
+   "volume": 25,
+   "file": "covers/vol-25.png",
+   "chapters": [
+    262,
+    272
+   ]
+  },
+  {
+   "volume": 26,
+   "file": "covers/vol-26.png",
+   "chapters": [
+    273,
+    283
+   ]
+  },
+  {
+   "volume": 27,
+   "file": "covers/vol-27.png",
+   "chapters": [
+    284,
+    294
+   ]
+  },
+  {
+   "volume": 28,
+   "file": "covers/vol-28.png",
+   "chapters": [
+    295,
+    305
+   ]
+  },
+  {
+   "volume": 29,
+   "file": "covers/vol-29.png",
+   "chapters": [
+    306,
+    316
+   ]
+  },
+  {
+   "volume": 30,
+   "file": "covers/vol-30.png",
+   "chapters": [
+    317,
+    327
+   ]
+  },
+  {
+   "volume": 31,
+   "file": "covers/vol-31.png",
+   "chapters": [
+    328,
+    338
+   ]
+  },
+  {
+   "volume": 32,
+   "file": "covers/vol-32.png",
+   "chapters": [
+    339,
+    349
+   ]
+  },
+  {
+   "volume": 33,
+   "file": "covers/vol-33.png",
+   "chapters": [
+    350,
+    360
+   ]
+  },
+  {
+   "volume": 34,
+   "file": "covers/vol-34.png",
+   "chapters": [
+    361,
+    371
+   ]
+  },
+  {
+   "volume": 35,
+   "file": "covers/vol-35.png",
+   "chapters": [
+    372,
+    382
+   ]
+  },
+  {
+   "volume": 36,
+   "file": "covers/vol-36.png",
+   "chapters": [
+    383,
+    393
+   ]
+  },
+  {
+   "volume": 37,
+   "file": "covers/vol-37.png",
+   "chapters": [
+    394,
+    404
+   ]
+  },
+  {
+   "volume": 38,
+   "file": "covers/vol-38.png",
+   "chapters": [
+    405,
+    415
+   ]
+  },
+  {
+   "volume": 39,
+   "file": "covers/vol-39.png",
+   "chapters": [
+    416,
+    426
+   ]
+  },
+  {
+   "volume": 40,
+   "file": "covers/vol-40.png",
+   "chapters": [
+    427,
+    437
+   ]
+  },
+  {
+   "volume": 41,
+   "file": "covers/vol-41.png",
+   "chapters": [
+    438,
+    448
+   ]
+  },
+  {
+   "volume": 42,
+   "file": "covers/vol-42.jpg",
+   "chapters": [
+    449,
+    459
+   ]
+  },
+  {
+   "volume": 43,
+   "file": "covers/vol-43.jpg",
+   "chapters": [
+    460,
+    470
+   ]
+  },
+  {
+   "volume": 44,
+   "file": "covers/vol-44.jpg",
+   "chapters": [
+    471,
+    481
+   ]
+  },
+  {
+   "volume": 45,
+   "file": "covers/vol-45.jpg",
+   "chapters": [
+    482,
+    492
+   ]
+  },
+  {
+   "volume": 46,
+   "file": "covers/vol-46.jpg",
+   "chapters": [
+    493,
+    503
+   ]
+  },
+  {
+   "volume": 47,
+   "file": "covers/vol-47.jpg",
+   "chapters": [
+    504,
+    514
+   ]
+  },
+  {
+   "volume": 48,
+   "file": "covers/vol-48.png",
+   "chapters": [
+    515,
+    525
+   ]
+  },
+  {
+   "volume": 49,
+   "file": "covers/vol-49.png",
+   "chapters": [
+    526,
+    536
+   ]
+  },
+  {
+   "volume": 50,
+   "file": "covers/vol-50.jpeg",
+   "chapters": [
+    537,
+    547
+   ]
+  },
+  {
+   "volume": 51,
+   "file": "covers/vol-51.png",
+   "chapters": [
+    548,
+    558
+   ]
+  },
+  {
+   "volume": 52,
+   "file": "covers/vol-52.jpg",
+   "chapters": [
+    559,
+    569
+   ]
+  },
+  {
+   "volume": 53,
+   "file": "covers/vol-53.jpeg",
+   "chapters": [
+    570,
+    580
+   ]
+  },
+  {
+   "volume": 54,
+   "file": "covers/vol-54.jpeg",
+   "chapters": [
+    581,
+    591
+   ]
+  },
+  {
+   "volume": 55,
+   "file": "covers/vol-55.jpg",
+   "chapters": [
+    592,
+    602
+   ]
+  },
+  {
+   "volume": 56,
+   "file": "covers/vol-56.png",
+   "chapters": [
+    603,
+    613
+   ]
+  },
+  {
+   "volume": 57,
+   "file": "covers/vol-57.png",
+   "chapters": [
+    614,
+    624
+   ]
+  },
+  {
+   "volume": 58,
+   "file": "covers/vol-58.jpg",
+   "chapters": [
+    625,
+    635
+   ]
+  },
+  {
+   "volume": 59,
+   "file": "covers/vol-59.jpg",
+   "chapters": [
+    636,
+    646
+   ]
+  },
+  {
+   "volume": 60,
+   "file": "covers/vol-60.jpg",
+   "chapters": [
+    647,
+    657
+   ]
+  },
+  {
+   "volume": 61,
+   "file": "covers/vol-61.png",
+   "chapters": [
+    658,
+    668
+   ]
+  },
+  {
+   "volume": 62,
+   "file": "covers/vol-62.jpg",
+   "chapters": [
+    669,
+    679
+   ]
+  },
+  {
+   "volume": 63,
+   "file": "covers/vol-63.jpg",
+   "chapters": [
+    680,
+    690
+   ]
+  },
+  {
+   "volume": 64,
+   "file": "covers/vol-64.jpg",
+   "chapters": [
+    691,
+    701
+   ]
+  },
+  {
+   "volume": 65,
+   "file": "covers/vol-65.png",
+   "chapters": [
+    702,
+    713
+   ]
+  },
+  {
+   "volume": 66,
+   "file": "covers/vol-66.jpg",
+   "chapters": [
+    714,
+    724
+   ]
+  },
+  {
+   "volume": 67,
+   "file": "covers/vol-67.png",
+   "chapters": [
+    725,
+    735
+   ]
+  },
+  {
+   "volume": 68,
+   "file": "covers/vol-68.png",
+   "chapters": [
+    736,
+    746
+   ]
+  },
+  {
+   "volume": 69,
+   "file": "covers/vol-69.png",
+   "chapters": [
+    747,
+    757
+   ]
+  },
+  {
+   "volume": 70,
+   "file": "covers/vol-70.png",
+   "chapters": [
+    758,
+    768
+   ]
+  },
+  {
+   "volume": 71,
+   "file": "covers/vol-71.png",
+   "chapters": [
+    769,
+    779
+   ]
+  },
+  {
+   "volume": 72,
+   "file": "covers/vol-72.png",
+   "chapters": [
+    780,
+    790
+   ]
+  },
+  {
+   "volume": 73,
+   "file": "covers/vol-73.png",
+   "chapters": [
+    791,
+    801
+   ]
+  },
+  {
+   "volume": 74,
+   "file": "covers/vol-74.png",
+   "chapters": [
+    802,
+    812
+   ]
+  },
+  {
+   "volume": 75,
+   "file": "covers/vol-75.png",
+   "chapters": [
+    813,
+    823
+   ]
+  },
+  {
+   "volume": 76,
+   "file": "covers/vol-76.png",
+   "chapters": [
+    824,
+    834
+   ]
+  },
+  {
+   "volume": 77,
+   "file": "covers/vol-77.png",
+   "chapters": [
+    835,
+    845
+   ]
+  },
+  {
+   "volume": 78,
+   "file": "covers/vol-78.png",
+   "chapters": [
+    846,
+    856
+   ]
+  },
+  {
+   "volume": 79,
+   "file": "covers/vol-79.png",
+   "chapters": [
+    857,
+    867
+   ]
+  },
+  {
+   "volume": 80,
+   "file": "covers/vol-80.jpg",
+   "chapters": [
+    868,
+    878
+   ]
+  }
+ ],
+ "characters": [
+  {
+   "name": "Bajio",
+   "file": "characters/bajio.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Bajio"
+  },
+  {
+   "name": "Ei Sei",
+   "file": "characters/ei-sei.jpg",
+   "wiki": "https://kingdom.fandom.com/wiki/Ei_Sei"
+  },
+  {
+   "name": "Go Kei",
+   "file": "characters/go-kei.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Go_Kei"
+  },
+  {
+   "name": "Haku Rei",
+   "file": "characters/haku-rei.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Haku_Rei"
+  },
+  {
+   "name": "Heki",
+   "file": "characters/heki.png",
+   "wiki": "https://kingdom.fandom.com/wiki/He_Ki"
+  },
+  {
+   "name": "Hou Ken",
+   "file": "characters/hou-ken.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Hou_Ken"
+  },
+  {
+   "name": "Ka Rin",
+   "file": "characters/ka-rin.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Ka_Rin"
+  },
+  {
+   "name": "Ka Ryo Ten",
+   "file": "characters/ka-ryo-ten.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Ka_Ryo_Ten"
+  },
+  {
+   "name": "Kan Ki",
+   "file": "characters/kan-ki.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Kan_Ki"
+  },
+  {
+   "name": "Kei Sha",
+   "file": "characters/kei-sha.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Kei_Sha"
+  },
+  {
+   "name": "Ko Chou",
+   "file": "characters/ko-chou.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Ko_Chou"
+  },
+  {
+   "name": "Kou Yoku",
+   "file": "characters/kou-yoku.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Kou_Yoku"
+  },
+  {
+   "name": "Kyou",
+   "file": "characters/kyou.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Kyou"
+  },
+  {
+   "name": "Kyou Kai",
+   "file": "characters/kyou-kai.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Kyou_Kai"
+  },
+  {
+   "name": "Man'U",
+   "file": "characters/man-u.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Man%27U"
+  },
+  {
+   "name": "Mou Bu",
+   "file": "characters/mou-bu.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Mou_Bu"
+  },
+  {
+   "name": "Mou Ten",
+   "file": "characters/mou-ten.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Mou_Ten"
+  },
+  {
+   "name": "Ou Hon",
+   "file": "characters/ou-hon.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Ou_Hon"
+  },
+  {
+   "name": "Ou Ki",
+   "file": "characters/ou-ki.jpg",
+   "wiki": "https://kingdom.fandom.com/wiki/Ou_Ki"
+  },
+  {
+   "name": "Ou Sen",
+   "file": "characters/ou-sen.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Ou_Sen"
+  },
+  {
+   "name": "Ren Pa",
+   "file": "characters/ren-pa.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Ren_Pa"
+  },
+  {
+   "name": "Ri Boku",
+   "file": "characters/ri-boku.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Ri_Boku"
+  },
+  {
+   "name": "Rin Ko",
+   "file": "characters/rin-ko.jpg",
+   "wiki": "https://kingdom.fandom.com/wiki/Rin_Ko"
+  },
+  {
+   "name": "Ryo Fui",
+   "file": "characters/ryo-fui.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Ryo_Fui"
+  },
+  {
+   "name": "Sei Kyou",
+   "file": "characters/sei-kyou.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Cheng_Jiao"
+  },
+  {
+   "name": "Shi Ka",
+   "file": "characters/shi-ka.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Shi_Ka"
+  },
+  {
+   "name": "Shin",
+   "file": "characters/shin.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Shin"
+  },
+  {
+   "name": "Shou Hei Kun",
+   "file": "characters/shou-hei-kun.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Shou_Hei_Kun"
+  },
+  {
+   "name": "Tou",
+   "file": "characters/tou.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Teng"
+  },
+  {
+   "name": "Yo Tan Wa",
+   "file": "characters/yo-tan-wa.png",
+   "wiki": "https://kingdom.fandom.com/wiki/Yo_Tan_Wa"
+  }
+ ]
+}

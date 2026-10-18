@@ -1,0 +1,42 @@
+{
+  "name": "kingdom-warring-states-atlas",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build --webpack",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "check:data": "node --import tsx scripts/check-data.ts",
+    "check:terrain": "node --import tsx scripts/check-terrain.ts",
+    "check:geometry": "node --import tsx scripts/check-map-geometry.ts",
+    "check:progression": "node --import tsx scripts/check-progression.ts",
+    "check:story": "node --import tsx scripts/check-story.ts",
+    "check:landmarks": "node --import tsx scripts/check-landmarks.ts",
+    "check:map-space": "node --import tsx scripts/check-map-space.ts",
+    "check:filters": "node --import tsx scripts/check-filters.ts",
+    "prepare:assets": "node scripts/prepare-assets.mjs",
+    "prebuild": "npm run prepare:assets",
+    "check:media": "node --import tsx scripts/check-media.ts",
+    "check:navigation": "node --import tsx scripts/check-navigation.ts",
+    "check:camera": "node --import tsx scripts/check-camera.ts"
+  },
+  "dependencies": {
+    "lucide-react": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "sharp": "0.35.5",
+    "three": "latest"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/three": "latest",
+    "tailwindcss": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}

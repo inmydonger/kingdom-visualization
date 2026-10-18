@@ -1,0 +1,856 @@
+{
+  "volumes": [
+    {
+      "volume": 1,
+      "file": "covers/vol-01.webp",
+      "chapters": [
+        1,
+        8
+      ]
+    },
+    {
+      "volume": 2,
+      "file": "covers/vol-02.webp",
+      "chapters": [
+        9,
+        19
+      ]
+    },
+    {
+      "volume": 3,
+      "file": "covers/vol-03.webp",
+      "chapters": [
+        20,
+        30
+      ]
+    },
+    {
+      "volume": 4,
+      "file": "covers/vol-04.webp",
+      "chapters": [
+        31,
+        41
+      ]
+    },
+    {
+      "volume": 5,
+      "file": "covers/vol-05.webp",
+      "chapters": [
+        42,
+        52
+      ]
+    },
+    {
+      "volume": 6,
+      "file": "covers/vol-06.webp",
+      "chapters": [
+        53,
+        63
+      ]
+    },
+    {
+      "volume": 7,
+      "file": "covers/vol-07.webp",
+      "chapters": [
+        64,
+        74
+      ]
+    },
+    {
+      "volume": 8,
+      "file": "covers/vol-08.webp",
+      "chapters": [
+        75,
+        85
+      ]
+    },
+    {
+      "volume": 9,
+      "file": "covers/vol-09.webp",
+      "chapters": [
+        86,
+        96
+      ]
+    },
+    {
+      "volume": 10,
+      "file": "covers/vol-10.webp",
+      "chapters": [
+        97,
+        107
+      ]
+    },
+    {
+      "volume": 11,
+      "file": "covers/vol-11.webp",
+      "chapters": [
+        108,
+        118
+      ]
+    },
+    {
+      "volume": 12,
+      "file": "covers/vol-12.webp",
+      "chapters": [
+        119,
+        129
+      ]
+    },
+    {
+      "volume": 13,
+      "file": "covers/vol-13.webp",
+      "chapters": [
+        130,
+        140
+      ]
+    },
+    {
+      "volume": 14,
+      "file": "covers/vol-14.webp",
+      "chapters": [
+        141,
+        151
+      ]
+    },
+    {
+      "volume": 15,
+      "file": "covers/vol-15.webp",
+      "chapters": [
+        152,
+        162
+      ]
+    },
+    {
+      "volume": 16,
+      "file": "covers/vol-16.webp",
+      "chapters": [
+        163,
+        173
+      ]
+    },
+    {
+      "volume": 17,
+      "file": "covers/vol-17.webp",
+      "chapters": [
+        174,
+        184
+      ]
+    },
+    {
+      "volume": 18,
+      "file": "covers/vol-18.webp",
+      "chapters": [
+        185,
+        195
+      ]
+    },
+    {
+      "volume": 19,
+      "file": "covers/vol-19.webp",
+      "chapters": [
+        196,
+        206
+      ]
+    },
+    {
+      "volume": 20,
+      "file": "covers/vol-20.webp",
+      "chapters": [
+        207,
+        217
+      ]
+    },
+    {
+      "volume": 21,
+      "file": "covers/vol-21.webp",
+      "chapters": [
+        218,
+        228
+      ]
+    },
+    {
+      "volume": 22,
+      "file": "covers/vol-22.webp",
+      "chapters": [
+        229,
+        239
+      ]
+    },
+    {
+      "volume": 23,
+      "file": "covers/vol-23.webp",
+      "chapters": [
+        240,
+        250
+      ]
+    },
+    {
+      "volume": 24,
+      "file": "covers/vol-24.webp",
+      "chapters": [
+        251,
+        261
+      ]
+    },
+    {
+      "volume": 25,
+      "file": "covers/vol-25.webp",
+      "chapters": [
+        262,
+        272
+      ]
+    },
+    {
+      "volume": 26,
+      "file": "covers/vol-26.webp",
+      "chapters": [
+        273,
+        283
+      ]
+    },
+    {
+      "volume": 27,
+      "file": "covers/vol-27.webp",
+      "chapters": [
+        284,
+        294
+      ]
+    },
+    {
+      "volume": 28,
+      "file": "covers/vol-28.webp",
+      "chapters": [
+        295,
+        305
+      ]
+    },
+    {
+      "volume": 29,
+      "file": "covers/vol-29.webp",
+      "chapters": [
+        306,
+        316
+      ]
+    },
+    {
+      "volume": 30,
+      "file": "covers/vol-30.webp",
+      "chapters": [
+        317,
+        327
+      ]
+    },
+    {
+      "volume": 31,
+      "file": "covers/vol-31.webp",
+      "chapters": [
+        328,
+        338
+      ]
+    },
+    {
+      "volume": 32,
+      "file": "covers/vol-32.webp",
+      "chapters": [
+        339,
+        349
+      ]
+    },
+    {
+      "volume": 33,
+      "file": "covers/vol-33.webp",
+      "chapters": [
+        350,
+        360
+      ]
+    },
+    {
+      "volume": 34,
+      "file": "covers/vol-34.webp",
+      "chapters": [
+        361,
+        371
+      ]
+    },
+    {
+      "volume": 35,
+      "file": "covers/vol-35.webp",
+      "chapters": [
+        372,
+        382
+      ]
+    },
+    {
+      "volume": 36,
+      "file": "covers/vol-36.webp",
+      "chapters": [
+        383,
+        393
+      ]
+    },
+    {
+      "volume": 37,
+      "file": "covers/vol-37.webp",
+      "chapters": [
+        394,
+        404
+      ]
+    },
+    {
+      "volume": 38,
+      "file": "covers/vol-38.webp",
+      "chapters": [
+        405,
+        415
+      ]
+    },
+    {
+      "volume": 39,
+      "file": "covers/vol-39.webp",
+      "chapters": [
+        416,
+        426
+      ]
+    },
+    {
+      "volume": 40,
+      "file": "covers/vol-40.webp",
+      "chapters": [
+        427,
+        437
+      ]
+    },
+    {
+      "volume": 41,
+      "file": "covers/vol-41.webp",
+      "chapters": [
+        438,
+        448
+      ]
+    },
+    {
+      "volume": 42,
+      "file": "covers/vol-42.webp",
+      "chapters": [
+        449,
+        459
+      ]
+    },
+    {
+      "volume": 43,
+      "file": "covers/vol-43.webp",
+      "chapters": [
+        460,
+        470
+      ]
+    },
+    {
+      "volume": 44,
+      "file": "covers/vol-44.webp",
+      "chapters": [
+        471,
+        481
+      ]
+    },
+    {
+      "volume": 45,
+      "file": "covers/vol-45.webp",
+      "chapters": [
+        482,
+        492
+      ]
+    },
+    {
+      "volume": 46,
+      "file": "covers/vol-46.webp",
+      "chapters": [
+        493,
+        503
+      ]
+    },
+    {
+      "volume": 47,
+      "file": "covers/vol-47.webp",
+      "chapters": [
+        504,
+        514
+      ]
+    },
+    {
+      "volume": 48,
+      "file": "covers/vol-48.webp",
+      "chapters": [
+        515,
+        525
+      ]
+    },
+    {
+      "volume": 49,
+      "file": "covers/vol-49.webp",
+      "chapters": [
+        526,
+        536
+      ]
+    },
+    {
+      "volume": 50,
+      "file": "covers/vol-50.webp",
+      "chapters": [
+        537,
+        547
+      ]
+    },
+    {
+      "volume": 51,
+      "file": "covers/vol-51.webp",
+      "chapters": [
+        548,
+        558
+      ]
+    },
+    {
+      "volume": 52,
+      "file": "covers/vol-52.webp",
+      "chapters": [
+        559,
+        569
+      ]
+    },
+    {
+      "volume": 53,
+      "file": "covers/vol-53.webp",
+      "chapters": [
+        570,
+        580
+      ]
+    },
+    {
+      "volume": 54,
+      "file": "covers/vol-54.webp",
+      "chapters": [
+        581,
+        591
+      ]
+    },
+    {
+      "volume": 55,
+      "file": "covers/vol-55.webp",
+      "chapters": [
+        592,
+        602
+      ]
+    },
+    {
+      "volume": 56,
+      "file": "covers/vol-56.webp",
+      "chapters": [
+        603,
+        613
+      ]
+    },
+    {
+      "volume": 57,
+      "file": "covers/vol-57.webp",
+      "chapters": [
+        614,
+        624
+      ]
+    },
+    {
+      "volume": 58,
+      "file": "covers/vol-58.webp",
+      "chapters": [
+        625,
+        635
+      ]
+    },
+    {
+      "volume": 59,
+      "file": "covers/vol-59.webp",
+      "chapters": [
+        636,
+        646
+      ]
+    },
+    {
+      "volume": 60,
+      "file": "covers/vol-60.webp",
+      "chapters": [
+        647,
+        657
+      ]
+    },
+    {
+      "volume": 61,
+      "file": "covers/vol-61.webp",
+      "chapters": [
+        658,
+        668
+      ]
+    },
+    {
+      "volume": 62,
+      "file": "covers/vol-62.webp",
+      "chapters": [
+        669,
+        679
+      ]
+    },
+    {
+      "volume": 63,
+      "file": "covers/vol-63.webp",
+      "chapters": [
+        680,
+        690
+      ]
+    },
+    {
+      "volume": 64,
+      "file": "covers/vol-64.webp",
+      "chapters": [
+        691,
+        701
+      ]
+    },
+    {
+      "volume": 65,
+      "file": "covers/vol-65.webp",
+      "chapters": [
+        702,
+        713
+      ]
+    },
+    {
+      "volume": 66,
+      "file": "covers/vol-66.webp",
+      "chapters": [
+        714,
+        724
+      ]
+    },
+    {
+      "volume": 67,
+      "file": "covers/vol-67.webp",
+      "chapters": [
+        725,
+        735
+      ]
+    },
+    {
+      "volume": 68,
+      "file": "covers/vol-68.webp",
+      "chapters": [
+        736,
+        746
+      ]
+    },
+    {
+      "volume": 69,
+      "file": "covers/vol-69.webp",
+      "chapters": [
+        747,
+        757
+      ]
+    },
+    {
+      "volume": 70,
+      "file": "covers/vol-70.webp",
+      "chapters": [
+        758,
+        768
+      ]
+    },
+    {
+      "volume": 71,
+      "file": "covers/vol-71.webp",
+      "chapters": [
+        769,
+        779
+      ]
+    },
+    {
+      "volume": 72,
+      "file": "covers/vol-72.webp",
+      "chapters": [
+        780,
+        790
+      ]
+    },
+    {
+      "volume": 73,
+      "file": "covers/vol-73.webp",
+      "chapters": [
+        791,
+        801
+      ]
+    },
+    {
+      "volume": 74,
+      "file": "covers/vol-74.webp",
+      "chapters": [
+        802,
+        812
+      ]
+    },
+    {
+      "volume": 75,
+      "file": "covers/vol-75.webp",
+      "chapters": [
+        813,
+        823
+      ]
+    },
+    {
+      "volume": 76,
+      "file": "covers/vol-76.webp",
+      "chapters": [
+        824,
+        834
+      ]
+    },
+    {
+      "volume": 77,
+      "file": "covers/vol-77.webp",
+      "chapters": [
+        835,
+        845
+      ]
+    },
+    {
+      "volume": 78,
+      "file": "covers/vol-78.webp",
+      "chapters": [
+        846,
+        856
+      ]
+    },
+    {
+      "volume": 79,
+      "file": "covers/vol-79.webp",
+      "chapters": [
+        857,
+        867
+      ]
+    },
+    {
+      "volume": 80,
+      "file": "covers/vol-80.webp",
+      "chapters": [
+        868,
+        878
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "name": "Bajio",
+      "file": "characters/bajio-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Bajio",
+      "thumbnail": "characters/bajio-thumb.webp",
+      "portrait": "characters/bajio-portrait.webp"
+    },
+    {
+      "name": "Ei Sei",
+      "file": "characters/ei-sei-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ei_Sei",
+      "thumbnail": "characters/ei-sei-thumb.webp",
+      "portrait": "characters/ei-sei-portrait.webp"
+    },
+    {
+      "name": "Go Kei",
+      "file": "characters/go-kei-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Go_Kei",
+      "thumbnail": "characters/go-kei-thumb.webp",
+      "portrait": "characters/go-kei-portrait.webp"
+    },
+    {
+      "name": "Haku Rei",
+      "file": "characters/haku-rei-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Haku_Rei",
+      "thumbnail": "characters/haku-rei-thumb.webp",
+      "portrait": "characters/haku-rei-portrait.webp"
+    },
+    {
+      "name": "Heki",
+      "file": "characters/heki-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/He_Ki",
+      "thumbnail": "characters/heki-thumb.webp",
+      "portrait": "characters/heki-portrait.webp"
+    },
+    {
+      "name": "Hou Ken",
+      "file": "characters/hou-ken-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Hou_Ken",
+      "thumbnail": "characters/hou-ken-thumb.webp",
+      "portrait": "characters/hou-ken-portrait.webp"
+    },
+    {
+      "name": "Ka Rin",
+      "file": "characters/ka-rin-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ka_Rin",
+      "thumbnail": "characters/ka-rin-thumb.webp",
+      "portrait": "characters/ka-rin-portrait.webp"
+    },
+    {
+      "name": "Ka Ryo Ten",
+      "file": "characters/ka-ryo-ten-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ka_Ryo_Ten",
+      "thumbnail": "characters/ka-ryo-ten-thumb.webp",
+      "portrait": "characters/ka-ryo-ten-portrait.webp"
+    },
+    {
+      "name": "Kan Ki",
+      "file": "characters/kan-ki-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Kan_Ki",
+      "thumbnail": "characters/kan-ki-thumb.webp",
+      "portrait": "characters/kan-ki-portrait.webp"
+    },
+    {
+      "name": "Kei Sha",
+      "file": "characters/kei-sha-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Kei_Sha",
+      "thumbnail": "characters/kei-sha-thumb.webp",
+      "portrait": "characters/kei-sha-portrait.webp"
+    },
+    {
+      "name": "Ko Chou",
+      "file": "characters/ko-chou-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ko_Chou",
+      "thumbnail": "characters/ko-chou-thumb.webp",
+      "portrait": "characters/ko-chou-portrait.webp"
+    },
+    {
+      "name": "Kou Yoku",
+      "file": "characters/kou-yoku-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Kou_Yoku",
+      "thumbnail": "characters/kou-yoku-thumb.webp",
+      "portrait": "characters/kou-yoku-portrait.webp"
+    },
+    {
+      "name": "Kyou",
+      "file": "characters/kyou-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Kyou",
+      "thumbnail": "characters/kyou-thumb.webp",
+      "portrait": "characters/kyou-portrait.webp"
+    },
+    {
+      "name": "Kyou Kai",
+      "file": "characters/kyou-kai-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Kyou_Kai",
+      "thumbnail": "characters/kyou-kai-thumb.webp",
+      "portrait": "characters/kyou-kai-portrait.webp"
+    },
+    {
+      "name": "Man'U",
+      "file": "characters/man-u-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Man%27U",
+      "thumbnail": "characters/man-u-thumb.webp",
+      "portrait": "characters/man-u-portrait.webp"
+    },
+    {
+      "name": "Mou Bu",
+      "file": "characters/mou-bu-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Mou_Bu",
+      "thumbnail": "characters/mou-bu-thumb.webp",
+      "portrait": "characters/mou-bu-portrait.webp"
+    },
+    {
+      "name": "Mou Ten",
+      "file": "characters/mou-ten-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Mou_Ten",
+      "thumbnail": "characters/mou-ten-thumb.webp",
+      "portrait": "characters/mou-ten-portrait.webp"
+    },
+    {
+      "name": "Ou Hon",
+      "file": "characters/ou-hon-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ou_Hon",
+      "thumbnail": "characters/ou-hon-thumb.webp",
+      "portrait": "characters/ou-hon-portrait.webp"
+    },
+    {
+      "name": "Ou Ki",
+      "file": "characters/ou-ki-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ou_Ki",
+      "thumbnail": "characters/ou-ki-thumb.webp",
+      "portrait": "characters/ou-ki-portrait.webp"
+    },
+    {
+      "name": "Ou Sen",
+      "file": "characters/ou-sen-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ou_Sen",
+      "thumbnail": "characters/ou-sen-thumb.webp",
+      "portrait": "characters/ou-sen-portrait.webp"
+    },
+    {
+      "name": "Ren Pa",
+      "file": "characters/ren-pa-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ren_Pa",
+      "thumbnail": "characters/ren-pa-thumb.webp",
+      "portrait": "characters/ren-pa-portrait.webp"
+    },
+    {
+      "name": "Ri Boku",
+      "file": "characters/ri-boku-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ri_Boku",
+      "thumbnail": "characters/ri-boku-thumb.webp",
+      "portrait": "characters/ri-boku-portrait.webp"
+    },
+    {
+      "name": "Rin Ko",
+      "file": "characters/rin-ko-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Rin_Ko",
+      "thumbnail": "characters/rin-ko-thumb.webp",
+      "portrait": "characters/rin-ko-portrait.webp"
+    },
+    {
+      "name": "Ryo Fui",
+      "file": "characters/ryo-fui-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Ryo_Fui",
+      "thumbnail": "characters/ryo-fui-thumb.webp",
+      "portrait": "characters/ryo-fui-portrait.webp"
+    },
+    {
+      "name": "Sei Kyou",
+      "file": "characters/sei-kyou-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Cheng_Jiao",
+      "thumbnail": "characters/sei-kyou-thumb.webp",
+      "portrait": "characters/sei-kyou-portrait.webp"
+    },
+    {
+      "name": "Shi Ka",
+      "file": "characters/shi-ka-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Shi_Ka",
+      "thumbnail": "characters/shi-ka-thumb.webp",
+      "portrait": "characters/shi-ka-portrait.webp"
+    },
+    {
+      "name": "Shin",
+      "file": "characters/shin-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Shin",
+      "thumbnail": "characters/shin-thumb.webp",
+      "portrait": "characters/shin-portrait.webp"
+    },
+    {
+      "name": "Shou Hei Kun",
+      "file": "characters/shou-hei-kun-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Shou_Hei_Kun",
+      "thumbnail": "characters/shou-hei-kun-thumb.webp",
+      "portrait": "characters/shou-hei-kun-portrait.webp"
+    },
+    {
+      "name": "Tou",
+      "file": "characters/tou-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Teng",
+      "thumbnail": "characters/tou-thumb.webp",
+      "portrait": "characters/tou-portrait.webp"
+    },
+    {
+      "name": "Yo Tan Wa",
+      "file": "characters/yo-tan-wa-portrait.webp",
+      "wiki": "https://kingdom.fandom.com/wiki/Yo_Tan_Wa",
+      "thumbnail": "characters/yo-tan-wa-thumb.webp",
+      "portrait": "characters/yo-tan-wa-portrait.webp"
+    }
+  ]
+}
