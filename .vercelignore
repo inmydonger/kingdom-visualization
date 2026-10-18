@@ -1,0 +1,9 @@
+.git
+.vercel
+.next
+node_modules
+out
+.openai
+work
+.env*
+*.tsbuildinfo

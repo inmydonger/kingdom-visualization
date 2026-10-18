@@ -4,6 +4,7 @@ out/
 *.tsbuildinfo
 .DS_Store
 .openai/
+.vercel/
 .env*
 !.env.example
 work/
