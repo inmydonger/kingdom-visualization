@@ -11,6 +11,7 @@ type ReaderCardProps = {
   site: StorySite;
   chapter: number;
   arcId?: string;
+  onActiveArcChange?: (arcId:string|null)=>void;
   onClose: () => void;
   onExpandedChange?: (expanded: boolean) => void;
 };
@@ -18,7 +19,7 @@ type ReaderCardProps = {
 const TABS = ['Overview', 'Territory'] as const;
 type ReaderTab = (typeof TABS)[number];
 
-export default function ReaderCard({ site, chapter, arcId, onClose, onExpandedChange }: ReaderCardProps) {
+export default function ReaderCard({ site, chapter, arcId, onActiveArcChange, onClose, onExpandedChange }: ReaderCardProps) {
   const id = useId();
   const heading = useRef<HTMLHeadingElement>(null);
   const scrollRegion = useRef<HTMLDivElement>(null);
@@ -31,6 +32,7 @@ export default function ReaderCard({ site, chapter, arcId, onClose, onExpandedCh
   const [portrait, setPortrait] = useState<{ character: AtlasCharacter; launch: number } | null>(null);
   const portraitLaunch = useRef(0);
   const [expanded, setExpanded] = useState(false);
+  const reportArc=useRef(onActiveArcChange);reportArc.current=onActiveArcChange;
   const reportExpanded = useRef(onExpandedChange);
   reportExpanded.current = onExpandedChange;
   const arc = availableArcs.find((item) => item.id === activeArcId) ?? availableArcs.at(-1);
@@ -45,6 +47,8 @@ export default function ReaderCard({ site, chapter, arcId, onClose, onExpandedCh
     scrollRegion.current?.scrollTo({ top: 0 });
     heading.current?.focus({ preventScroll: true });
   }, [site.id]);
+  useEffect(()=>{reportArc.current?.(arc?.id??null);},[arc?.id]);
+  useEffect(()=>()=>{reportArc.current?.(null);},[]);
   useEffect(() => { setPortrait(null); }, [site.id, arc?.id, chapter]);
   useEffect(() => { reportExpanded.current?.(expanded); }, [expanded]);
   useEffect(() => () => { reportExpanded.current?.(false); }, []);
@@ -153,7 +157,7 @@ export default function ReaderCard({ site, chapter, arcId, onClose, onExpandedCh
         {tab === 'Territory' && <div className={styles.territory}><Flag size={18} strokeWidth={1.3} aria-hidden="true" /><div><h3>Territory change</h3><p>{details.territoryDelta || 'The outcome stays hidden until you finish this arc.'}</p></div></div>}
       </div>
       </div>
-      <div className={styles.footer}><span className={details.inProgress ? styles.progress : ''}>{details.inProgress ? 'In progress' : 'Arc complete'}</span><span>Your chapter {chapter}</span></div>
+      <div className={styles.footer}><span className={details.inProgress ? styles.progress : ''}>{details.inProgress ? 'In progress' : 'Arc complete'}</span><span>Explored through {chapter}</span></div>
     </section>
     {portrait && <CharacterPortrait key={`${portrait.character.id}-${portrait.launch}`} character={portrait.character} chapter={chapter} onClose={() => setPortrait((current) => current?.launch === portrait.launch ? null : current)} />}
     </>

@@ -1,6 +1,6 @@
 # Kingdom: Warring States Atlas
 
-Phase 5 of a reader-aware 3D atlas for *Kingdom*. Built with Next.js App Router, React, TypeScript, Tailwind CSS, Three.js, and Lucide. The full-screen isometric map has sculpted relief, painterly terrain textures, coastal cliffs, and woodland groves. Everything floats over the map, with no sidebar or header bar. Chapter-based fog reveals 20 landmarks covering 28 arcs; a centered story-arc picker, a five-volume comic stack, and character portraits help explore the stories you have reached.
+Phase 5 of a reader-aware 3D atlas for *Kingdom*. Built with Next.js App Router, React, TypeScript, Tailwind CSS, Three.js, and Lucide. The full-screen isometric map has sculpted relief, painterly terrain textures, coastal cliffs, and woodland groves. Shared state borders curve smoothly without gaps; grassy plains blend into rocky ridges using height and slope. Everything floats over the map, with no sidebar or header bar. Saved reading progress reveals 20 landmarks covering 28 arcs; a centered story-arc picker, a five-volume comic stack, and character portraits help explore the stories you have reached.
 
 ## Run locally
 
@@ -37,15 +37,21 @@ To open Gyou directly in the local preview, use [chapter 845 at Gyou](http://127
 
 ## Focused map controls
 
-The chapter button floats at the top center, with one **Story arc** picker directly below it. Choose a revealed arc to focus its landmark, or **All story arcs** to restore the available map. The picker includes only started stories at discovered locations. Lowering the reader chapter clears an arc that is no longer available. The Seven States dock, state filter, filter menu, and Layers control have been removed; relief and place labels remain enabled.
+The chapter button floats at the top center, with one **Story arc** picker directly below it. Choose a revealed arc to focus its landmark, or **All story arcs** to restore the available map. The picker includes only started stories at discovered locations. Arc choices use the furthest chapter you have read; revisiting an earlier chapter does not lock already-known stories again. The Seven States dock, state filter, filter menu, and Layers control have been removed; relief and place labels remain enabled.
 
 Filtering to one arc at a shared location shows only that arc in its reader card. For example, **Conquest of Han** keeps the Shintei miniature and excludes its earlier **Nature of Humanity** story from the filtered card. The URL stores the selection as `arc=arcID`; legacy `filter` parameters are cleared. State selection on the map still focuses a territory without filtering landmarks.
 
 The brand is an unboxed wordmark on desktop and a small seal on phones. Cast, map help, and legend use vertically stacked icon buttons with accessible labels and hover titles. The legend is closed by default and light-dismisses on outside click or Escape. There is no persistent heading, legend, scale note, or first-use panel over the terrain.
 
+## Campaign arrows
+
+Selecting a military arc or a recent volume draws curved, terrain-draped attack arrows in each attacking state's color. The camera fits the full movement plan, including on a phone. A pale ticked defensive front follows the nearby curved state border. Coalition Invasion shows **Zhao, Wei, Chu, Yan, and Han → Qin**; Qi is excluded because it withdraws. **War of the Three States** shows allied Qin and Wei offensives against Chu. Personal and diplomatic arcs explicitly show that there is no interstate offensive, instead of inventing one. Directions follow the story dataset; paths are schematic and do not claim exact army positions. The chapter and discovered-site gates prevent future campaigns from appearing.
+
+[Coalition reference](https://kingdom.fandom.com/wiki/Coalition_Invasion_Arc). `lib/campaign-data.ts` holds the directions; `lib/campaign-geometry.ts` owns the arrows, outlines, chevrons, and defensive frontage.
+
 ## Volume bookshelf and local media
 
-A bottom-left **comic-book stack** shows the current volume and up to four preceding volumes. The manifest places chapter **845** in **volume 77**, so its shelf contains only **volumes 73–77**. Tap the stack to fan out those five covers; the current volume has a brass outline, and a hovered cover lifts. Choosing a cover closes the shelf, jumps to its first chapter, and flies toward its main arc. Outside click or Escape dismisses the shelf. Beginning readers see only the volumes they have reached, and later reading positions retain the last supplied cover (volume 80).
+A bottom-left **comic-book stack** shows the current volume and up to four preceding volumes. The manifest places chapter **845** in **volume 77**, so its shelf contains only **volumes 73–77**. Tap the stack to fan out those five covers; the current volume has a brass outline, and a hovered cover lifts. Choosing a cover closes the shelf, selects its main arc, and fits the camera to its campaign. It does not change your reading chapter or erase explored ground. The selected volume is stored separately as `volume=N`. Outside click or Escape dismisses the shelf. Beginning readers see only the volumes they have reached, and later reading positions retain the last supplied cover (volume 80).
 
 
 Media stays local. `assets/manifest.json` and `assets/source/` preserve the supplied 80 covers and 30 character originals (about 40 MB). `npm run prepare:assets` uses Sharp to generate 140 WebP images totaling about 3.22 MB in `public/assets/`, plus a generated manifest. Covers are at most 200×300, thumbnails 96×120, and portraits 420×560, preserving aspect ratio. `npm run build` runs this preparation automatically through `prebuild`; the browser serves only the smaller images. `lib/media-data.ts` supplies chapter-to-volume lookup, main-arc selection, and character metadata. See `assets/README.md` for source and metadata notes.
@@ -54,15 +60,15 @@ Volume travel only chooses arcs already started at the volume’s first chapter.
 
 ## Reading progress
 
-Open **Your chapter** to enter the last chapter you have read and choose **Apply chapter**. The default is chapter **845**. Your chapter and unexplored-area preference are saved in this browser; the `?chapter=100` URL parameter overrides the saved chapter for that visit. Chapter changes update the URL so a local view can be reopened at the same point.
+Open **Your chapter** to enter the last chapter you have read and choose **Apply chapter**. The default is chapter **845**. Your reading position, furthest explored chapter, and unexplored-area preference are saved in this browser; the `?chapter=100` URL parameter overrides the saved chapter for that visit. Chapter changes update the URL. Exploration is monotonic: lowering the chapter, switching arcs, choosing a volume, or reloading cannot cover previously discovered ground. New chapter progress expands the revealed area. First-time readers still begin at their chosen chapter, and existing saved chapter progress is migrated.
 
 Discovered terrain retains its color. Under **Unexplored areas**, choose **Faint silhouettes** for grey terrain and unnamed shapes beyond your chapter, or **Fully hidden** to hide unreached terrain, names, and markers. Capital models follow terrain discovery, while story pins also obey their reading gates and active filters. The **Your chapter** marker follows your frontier, while the muted **Latest release** marker shows the configured latest point when its area is visible.
 
-The unexplored-area preference is stored under `kingdom-silhouettes`. A URL parameter overrides that saved mode: `spoilers=silhouettes` shows faint shapes, while `spoilers=hidden` fully hides unexplored areas. Chapter progress is stored under `kingdom-reader-chapter`.
+The unexplored-area preference is stored under `kingdom-silhouettes`. A URL parameter overrides that saved mode: `spoilers=silhouettes` shows faint shapes, while `spoilers=hidden` fully hides unexplored areas. The current reading position is stored under `kingdom-reader-chapter`, while `kingdom-explored-chapter` records the furthest explored chapter. Fog, story gates, character gates, and territory changes use that saved maximum; the chapter input can revisit an earlier position. The legend and reader settings display the saved exploration limit.
 
 Chapter **890** is a user-supplied release estimate, not a live or independently verified chapter count. Update `LATEST_RELEASE_CHAPTER` in `lib/progression.ts` when the estimate changes. The chapter control currently accepts whole numbers from 1 through that configured value.
 
-At chapter **100**, the western starting area is colored and later regions remain grey. At chapter **845**, the remaining fog is concentrated in the Zhao endgame area. Han changes to Qin territory only after chapter **844**; entering an earlier chapter restores its independent appearance. Discovery regions are a schematic reading aid, not a claim that one chapter reveals an entire historical state.
+At chapter **100**, the western starting area is colored and later regions remain grey. At chapter **845**, the remaining fog is concentrated in the Zhao endgame area. Han changes to Qin territory only after chapter **844**; revisiting an earlier chapter preserves its already-discovered appearance. Discovery regions are a schematic reading aid, not a claim that one chapter reveals an entire historical state.
 
 ## Validate and build
 
@@ -79,11 +85,12 @@ npm run prepare:assets
 npm run check:media
 npm run check:navigation
 npm run check:camera
+npm run check:campaigns
 npm run typecheck
 npm run build
 ```
 
-The app exports a static site to `out/`. `lib/atlas-data.ts` holds seven hand-authored schematic state polygons, their capitals, rivers, and Hangu Pass. `lib/terrain-height.ts` defines connected ridges, plateaus, riverbeds, and capital clearings; `lib/terrain-textures.ts` supplies procedural surface textures. Terrain geometry shares a sampling grid across state boundaries. `lib/progression.ts` defines the discovery field and chapter thresholds; `lib/fog-material.ts` shades or hides uncharted terrain, and `lib/discovery-frontier.ts` traces its edge. `lib/story-data.ts` holds the 28 arcs, 20 sites, and story-detail gates; `lib/story-miniatures.ts` builds their 3D models. `lib/landmark-filters.ts` supplies chapter-safe filter choices and shared visibility rules for the map, counts, and cards. Boundaries and topography are illustrative, not historical GIS or DEM data.
+The app exports a static site to `out/`. `lib/atlas-data.ts` holds seven hand-authored schematic state polygons, their capitals, rivers, and Hangu Pass. `lib/terrain-height.ts` defines connected ridges, plateaus, riverbeds, and capital clearings; `lib/terrain-textures.ts` supplies distinct grass and rock color/bump textures blended by surface height and slope. `lib/border-paths.ts` smooths each shared frontier once, preserving junctions and Hangu Pass, so the political meshes remain watertight. Fog uses a bilinearly sampled discovery field and joined, rounded contours rather than triangle edges. Terrain geometry shares a sampling grid across state boundaries. `lib/progression.ts` defines the discovery field and chapter thresholds; `lib/fog-material.ts` shades or hides uncharted terrain, and `lib/discovery-frontier.ts` traces its edge. `lib/story-data.ts` holds the 28 arcs, 20 sites, and story-detail gates; `lib/story-miniatures.ts` builds their 3D models. `lib/landmark-filters.ts` supplies chapter-safe filter choices and shared visibility rules for the map, counts, and cards. Boundaries and topography are illustrative, not historical GIS or DEM data.
 
 ## Phase boundary
 

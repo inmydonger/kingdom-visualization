@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { STATES, RIVERS, type Point, type StateId } from "./atlas-data";
 import { elevation as fieldElevation, terrainNormal, terrainTint } from "./terrain-height";
-import { createTerrainTextures } from "./terrain-textures";
+import { createTerrainTextures, applyTerrainBiome } from "./terrain-textures";
 import { createFogController } from "./fog-material";
 
 // All states use the same sampling grid and analytic normals. Borders therefore
@@ -47,18 +47,18 @@ function terrainGeometry(points: readonly Point[], color: string, sample: (x: nu
   const maxX = Math.ceil(Math.max(...polygon.map(p => p[0])) / STEP);
   const minZ = Math.floor(Math.min(...polygon.map(p => p[1])) / STEP);
   const maxZ = Math.ceil(Math.max(...polygon.map(p => p[1])) / STEP);
-  const positions: number[] = [], normals: number[] = [], colors: number[] = [], uvs: number[] = [];
-  const base = new THREE.Color(color).lerp(new THREE.Color("#8c9463"), 0.2);
+  const positions: number[] = [], normals: number[] = [], colors: number[] = [], uvs: number[] = [], rockBlends:number[] = [];
+  const base = new THREE.Color("#91a577").lerp(new THREE.Color(color), 0.2);
   const rock = new THREE.Color("#9e9986");
   const shade = new THREE.Color();
   const conquest:number[]=[];
-  const conqueredBase=conquestColor?new THREE.Color(conquestColor).lerp(new THREE.Color('#8c9463'),0.2):null;
+  const conqueredBase=conquestColor?new THREE.Color('#91a577').lerp(new THREE.Color(conquestColor),0.2):null;
   function vertex(p: Point) {
     const s = sample(p[0], p[1]);
-    const exposed = THREE.MathUtils.clamp((s.height - 2) / 7 + (1 - s.normal[1]) * 0.62, 0, 0.75);
+    const exposed = THREE.MathUtils.clamp((s.height - 1.4) / 3 + (1 - s.normal[1]) * 2.8, 0, 1);
     shade.copy(base).lerp(rock, exposed).multiplyScalar(s.tint);
     positions.push(p[0], s.height + offset, p[1]); normals.push(...s.normal);
-    colors.push(shade.r, shade.g, shade.b); uvs.push(p[0] / 28, p[1] / 28);
+    colors.push(shade.r, shade.g, shade.b); uvs.push(p[0] / 8, p[1] / 8);rockBlends.push(exposed);
     if(conqueredBase){shade.copy(conqueredBase).lerp(rock,exposed).multiplyScalar(s.tint);conquest.push(shade.r,shade.g,shade.b);}
   }
   for (let iz = minZ; iz < maxZ; iz++) {
@@ -86,6 +86,7 @@ function terrainGeometry(points: readonly Point[], color: string, sample: (x: nu
   geometry.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
   geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setAttribute("aRockBlend",new THREE.Float32BufferAttribute(rockBlends,1));
   if(conqueredBase)geometry.setAttribute('conquestColor',new THREE.Float32BufferAttribute(conquest,3));
   geometry.computeBoundingSphere();
   return geometry;
@@ -114,7 +115,7 @@ export function buildMap() {
   const group = new THREE.Group(), terrain = new THREE.Group();
   group.add(terrain);
   const stateMeshes = new Map<StateId, THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>>();
-  const borders = new Map<StateId, THREE.Line>();
+  const borders = new Map<StateId, THREE.Mesh<THREE.BufferGeometry,THREE.MeshBasicMaterial>>();
   const textures = createTerrainTextures();
   const fog=createFogController();
   const fogDepthMaterial=fog.createDepthMaterial();
@@ -126,7 +127,10 @@ export function buildMap() {
     if (!value) { value = { height: elevation(x,z), normal: terrainNormal(x,z), tint: terrainTint(x,z) }; cache.set(key, value); }
     return value;
   }
-  const surfaceMaterial = () => new THREE.MeshStandardMaterial({ vertexColors: true, map: textures.color, bumpMap: textures.bump, bumpScale: 0.14, roughness: 0.96, metalness: 0, side: THREE.DoubleSide });
+  const surfaceMaterial = () => {
+    const material=new THREE.MeshStandardMaterial({vertexColors:true,map:textures.color,bumpMap:textures.bump,bumpScale:.32,roughness:.94,metalness:0,side:THREE.DoubleSide});
+    applyTerrainBiome(material,textures);return material;
+  };
 
   const sea = new THREE.Mesh(new THREE.PlaneGeometry(400, 300), new THREE.MeshStandardMaterial({ color: "#2b7171", map: textures.color, bumpMap: textures.bump, bumpScale: 0.065, roughness: 0.48, metalness: 0.1 }));
   sea.geometry.getAttribute("uv").array.forEach((v, i, uv) => { uv[i] = v * 15; });
@@ -147,10 +151,11 @@ export function buildMap() {
   const distantColor = new THREE.Color("#7b8765");
   for(let i=0;i<distantPositions.count;i++) {
     distantColors.push(distantColor.r,distantColor.g,distantColor.b);
-    distantUvs.push(distantPositions.getX(i)/28,distantPositions.getZ(i)/28);
+    distantUvs.push(distantPositions.getX(i)/8,distantPositions.getZ(i)/8);
   }
   distantGeometry.setAttribute("color",new THREE.Float32BufferAttribute(distantColors,3));
   distantGeometry.setAttribute("uv",new THREE.Float32BufferAttribute(distantUvs,2));
+  distantGeometry.setAttribute("aRockBlend",new THREE.Float32BufferAttribute(new Float32Array(distantPositions.count),1));
   const distant = new THREE.Mesh(distantGeometry,surfaceMaterial());
   distant.name='context-base';
   distant.position.y=.39; distant.receiveShadow=true; terrain.add(distant);
@@ -174,6 +179,7 @@ export function buildMap() {
   cliffGeometry.setAttribute("position", new THREE.Float32BufferAttribute(cliffPositions,3));
   cliffGeometry.setAttribute("color",new THREE.Float32BufferAttribute(cliffColors,3));
   cliffGeometry.setAttribute("uv",new THREE.Float32BufferAttribute(cliffUvs,2)); cliffGeometry.computeVertexNormals();
+  cliffGeometry.setAttribute("aRockBlend",new THREE.Float32BufferAttribute(new Float32Array(cliffPositions.length/3).fill(1),1));
   const cliffs = new THREE.Mesh(cliffGeometry,surfaceMaterial()); cliffs.castShadow = true; cliffs.receiveShadow = true; terrain.add(cliffs);
 
   for (const distance of [0.35,1.1,2.2,3.7,5.6]) {
@@ -200,8 +206,10 @@ export function buildMap() {
       for(let s=0;s<steps;s++) boundary.push(worldPoint([a[0]+(b[0]-a[0])*s/steps,a[1]+(b[1]-a[1])*s/steps],0.07));
     }
     boundary.push(boundary[0]);
-    const border=new THREE.Line(new THREE.BufferGeometry().setFromPoints(boundary),new THREE.LineBasicMaterial({color:"#dccda0",transparent:true,opacity:0.65}));
-    terrain.add(border);borders.set(state.id,border);
+    const underlay=new THREE.Mesh(ribbon(boundary,.18,.1),new THREE.MeshBasicMaterial({color:'#213131',transparent:true,opacity:.48,side:THREE.DoubleSide,depthWrite:false}));
+    const border=new THREE.Mesh(ribbon(boundary,.065,.15),new THREE.MeshBasicMaterial({color:'#e5ddc6',transparent:true,opacity:.68,side:THREE.DoubleSide,depthWrite:false}));
+    underlay.renderOrder=2;border.renderOrder=3;
+    terrain.add(underlay,border);borders.set(state.id,border);
   }
   for(const river of RIVERS) {
     const curve=new THREE.CatmullRomCurve3(river.points.map(p=>worldPoint(p)),false,"centripetal");
@@ -211,10 +219,10 @@ export function buildMap() {
     terrain.add(banks,water);
   }
   terrain.traverse(object=>{
-    if((object instanceof THREE.Mesh||object instanceof THREE.Line)&&(object.material instanceof THREE.MeshStandardMaterial||object.material instanceof THREE.LineBasicMaterial)){
+    if((object instanceof THREE.Mesh||object instanceof THREE.Line)&&(object.material instanceof THREE.MeshStandardMaterial||object.material instanceof THREE.LineBasicMaterial||object.material instanceof THREE.MeshBasicMaterial)){
       fog.prepare(object.geometry);fog.apply(object.material,object.name==='han',object.name==='context-base');
       if(object instanceof THREE.Mesh&&object.castShadow)object.customDepthMaterial=fogDepthMaterial;
     }
   });
-  return {group,stateMeshes,borders,setChapter: fog.setChapter,setHidden(hidden:boolean){fog.setHidden(hidden);hiddenPlane.visible=hidden;coastDecor.forEach(line=>{line.visible=!hidden;});},setRelief(visible:boolean){const scale=visible?1:0.08;terrain.scale.y=scale;terrain.position.y=SEA_LEVEL*(1-scale);},disposeTextures(){textures.color.dispose();textures.bump.dispose();}};
+  return {group,stateMeshes,borders,setChapter: fog.setChapter,setHidden(hidden:boolean){fog.setHidden(hidden);hiddenPlane.visible=hidden;coastDecor.forEach(line=>{line.visible=!hidden;});},setRelief(visible:boolean){const scale=visible?1:0.08;terrain.scale.y=scale;terrain.position.y=SEA_LEVEL*(1-scale);},disposeTextures(){textures.color.dispose();textures.bump.dispose();textures.rock.dispose();textures.rockBump.dispose();fog.dispose();}};
 }

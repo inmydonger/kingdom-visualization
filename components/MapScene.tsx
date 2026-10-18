@@ -16,9 +16,11 @@ import { STORY_SITES, isSiteDiscovered } from '@/lib/story-data';
 import { createStoryMiniature } from '@/lib/story-miniatures';
 import { getVisibleSites, matchesSiteFilters, normalizeFilters, type LandmarkFilters } from '@/lib/landmark-filters';
 import { cameraFlightDuration, cameraFlightProgress, clampCameraTarget } from '@/lib/camera-motion';
+import { getCampaignRoutes } from '@/lib/campaign-data';
+import { createCampaignOverlay, disposeCampaignOverlay } from '@/lib/campaign-geometry';
 import styles from "./MapScene.module.css";
 
-type Command = { type: "reset" | "zoom-in" | "zoom-out" | "focus" | "site" | "region"; id: number; stateId?: StateId; siteId?: string; point?:Point };
+type Command = { type: "reset" | "zoom-in" | "zoom-out" | "focus" | "site" | "region" | "campaign"; id: number; stateId?: StateId; siteId?: string; arcId?:string; point?:Point };
 type Props = {
   selectedState: StateId | null;
   onSelectState: (id: StateId | null) => void;
@@ -26,6 +28,7 @@ type Props = {
   readerExpanded?: boolean;
   onSelectSite: (id:string|null)=>void;
   readerChapter: number;
+  campaignArcId: string;
   showSilhouettes: boolean;
   filters: LandmarkFilters;
   command: Command | null;
@@ -39,8 +42,9 @@ export default function MapScene(props: Props) {
   const callbacks = useRef(props);
   callbacks.current = props;
   const readerPoint=useMemo(()=>getReaderFrontierPoint(props.readerChapter),[props.readerChapter]);
+  const campaignRoutes=getCampaignRoutes(props.campaignArcId,props.readerChapter);
   const visibleSites=getVisibleSites(props.readerChapter,props.filters,props.showSilhouettes);
-  const api = useRef<{ command: (c: Command) => void; select: (id: StateId | null) => void; progress:(chapter:number,silhouettes:boolean,filters:LandmarkFilters)=>void; hover:(id:string|null,tooltip?:boolean)=>void } | null>(null);
+  const api = useRef<{ command: (c: Command) => void; select: (id: StateId | null) => void; campaign:(arcId:string)=>void; progress:(chapter:number,silhouettes:boolean,filters:LandmarkFilters)=>void; hover:(id:string|null,tooltip?:boolean)=>void } | null>(null);
 
   useEffect(() => {
     const container = host.current!;
@@ -88,6 +92,7 @@ export default function MapScene(props: Props) {
     const forestBatches=woodlands.children.filter((o):o is THREE.InstancedMesh=>o instanceof THREE.InstancedMesh).map(mesh=>({mesh,original:mesh.instanceMatrix.array.slice()}));
     const frontier=new THREE.LineSegments(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:'#dec18b',transparent:true,opacity:0.85,depthTest:false}));
     frontier.renderOrder=8; map.group.children[0].add(frontier);
+    let campaignOverlay=createCampaignOverlay([]),shownCampaign='';map.group.add(campaignOverlay);
     const storyObjects=STORY_SITES.map(site=>{
       const color=STATES.find(state=>state.id===site.stateId)?.color??'#b8a174';
       const object=createStoryMiniature(site.kind,site.tier,color);
@@ -111,6 +116,7 @@ export default function MapScene(props: Props) {
     }
     const reliefVisible = true;
     let readerChapter=callbacks.current.readerChapter??DEFAULT_READER_CHAPTER;
+    let frontierChapter=-1;
     let showSilhouettes=callbacks.current.showSilhouettes;
     let activeFilters=normalizeFilters(callbacks.current.filters,readerChapter);
     let tween: { start: number; duration:number; from: THREE.Vector3; to: THREE.Vector3; fromZoom: number; toZoom: number } | null = null;
@@ -164,7 +170,8 @@ export default function MapScene(props: Props) {
         projected.set((x - 50)*MAP_WORLD_SCALE, reliefHeight(elevation(x - 50, z - 36),reliefVisible) + lift, (z - 36)*MAP_WORLD_SCALE).project(camera);
         const px = (projected.x + 1) * w / 2;
         const py = (1 - projected.y) * h / 2;
-        node.style.transform = `translate(${px}px, ${py}px) translate(-50%, -50%)`;
+        const labelX=node.dataset.campaignRoute?THREE.MathUtils.clamp(px,node.offsetWidth/2+10,w-node.offsetWidth/2-10):px;
+        node.style.transform = `translate(${labelX}px, ${py}px) translate(-50%, -50%)`;
         if(node.dataset.storyId&&px>=0&&px<=w&&py>=0&&py<=h)storyLabels.push({node,x:px,y:py});
         node.style.visibility = px < -100 || px > w + 100 || py < -50 || py > h + 50 ? "hidden" : "visible";
       }
@@ -218,6 +225,18 @@ export default function MapScene(props: Props) {
       invalidate();
     }
     function command(c: Command) {
+      if(c.type==='campaign'&&c.arcId){
+        const routes=getCampaignRoutes(c.arcId,readerChapter);
+        if(routes.length){
+          const points=routes.flatMap(route=>route.points.map(p=>mapWorldPoint(p,1)));
+          const right=points.map(p=>p.dot(new THREE.Vector3(1,0,-1).normalize()));
+          const up=points.map(p=>p.dot(new THREE.Vector3(-1,2,-1).normalize()));
+          const midRight=(Math.min(...right)+Math.max(...right))/2,midUp=(Math.min(...up)+Math.max(...up))/2;
+          const center=new THREE.Vector3((Math.SQRT2*midRight-Math.sqrt(6)*midUp)/2,0,(-Math.SQRT2*midRight-Math.sqrt(6)*midUp)/2);
+          const zoom=Math.min((camera.right-camera.left)*.78/(Math.max(...right)-Math.min(...right)+20),(camera.top-camera.bottom)*.68/(Math.max(...up)-Math.min(...up)+20));
+          move(center,zoom);
+        }
+      }
       if(c.type==="region"&&c.point){const point=mapWorldPoint(c.point);point.y=0;move(point,2.1*MAP_WORLD_SCALE);}
       if (c.type === "reset") move(new THREE.Vector3(0, 0, 0), homeZoom);
       if (c.type === "zoom-in" || c.type === "zoom-out") move(controls.target.clone(), THREE.MathUtils.clamp(camera.zoom * (c.type === "zoom-in" ? 1.3 : 1 / 1.3), controls.minZoom, controls.maxZoom));
@@ -249,7 +268,7 @@ export default function MapScene(props: Props) {
     function select(id: StateId | null) {
       for (const [stateId, mesh] of map.stateMeshes) {
         mesh.material.color.set(!id || id === stateId ? "#ffffff" : "#dedede");
-        const material = map.borders.get(stateId)!.material as THREE.LineBasicMaterial;
+        const material = map.borders.get(stateId)!.material;
         material.color.set(id === stateId ? "#ffe2a1" : "#d0c197");
         const state=STATES.find(s=>s.id===stateId)!;
         material.opacity = id === stateId ? 1 : isDiscovered(state.label,readerChapter)?0.65:0.2;
@@ -262,9 +281,15 @@ export default function MapScene(props: Props) {
     map.setRelief(true);
     for (const {object,point} of landmarks) object.position.y = reliefHeight(elevation(point[0]-50,point[1]-36),true) + 0.05;
     for(const {object,ghost,site} of storyObjects)object.position.y=ghost.position.y=reliefHeight(elevation(site.position[0]-50,site.position[1]-36),true)+0.08;
+    function campaign(arcId:string){
+      const key=`${arcId}:${readerChapter}`;if(shownCampaign===key)return;shownCampaign=key;
+      map.group.remove(campaignOverlay);disposeCampaignOverlay(campaignOverlay);
+      campaignOverlay=createCampaignOverlay(getCampaignRoutes(arcId,readerChapter));map.group.add(campaignOverlay);invalidate();
+    }
     function progress(chapter:number,silhouettes:boolean,filters:LandmarkFilters) {
       readerChapter=chapter;showSilhouettes=silhouettes;activeFilters=normalizeFilters(filters,chapter);map.setChapter(chapter);map.setHidden(!silhouettes);
-      frontier.geometry.dispose();frontier.geometry=createFrontierGeometry(chapter);
+      if(frontierChapter!==chapter){frontier.geometry.dispose();frontier.geometry=createFrontierGeometry(chapter);frontierChapter=chapter;}
+      campaign(callbacks.current.campaignArcId);
       const visibleSites=getVisibleSites(chapter,activeFilters,silhouettes);
       const visibleIds=new Set(visibleSites.map(site=>site.id));
       for(const {object,point,stateId} of landmarks)object.visible=isDiscovered(point,chapter)&&activeFilters.arc==='all'&&(activeFilters.state==='all'||activeFilters.state===stateId)&&!visibleSites.some(site=>Math.hypot(site.position[0]-point[0],site.position[1]-point[1])<3);
@@ -284,7 +309,7 @@ export default function MapScene(props: Props) {
       }
       select(callbacks.current.selectedState);renderer.shadowMap.needsUpdate=true;invalidate();
     }
-    api.current = { command, select, progress, hover };
+    api.current = { command, select, campaign, progress, hover };
     select(callbacks.current.selectedState);
     progress(readerChapter,callbacks.current.showSilhouettes,callbacks.current.filters);
     let homeZoom = 1;
@@ -308,6 +333,7 @@ export default function MapScene(props: Props) {
       camera.top = height / 2; camera.bottom = -height / 2;
       camera.updateProjectionMatrix(); renderer.setSize(w, h); invalidate();
       if(callbacks.current.selectedSiteId)command({type:'site',siteId:callbacks.current.selectedSiteId,id:0});
+      else if(getCampaignRoutes(callbacks.current.campaignArcId,readerChapter).length)command({type:'campaign',arcId:callbacks.current.campaignArcId,id:0});
     }
     const observer = new ResizeObserver(resize); observer.observe(container); resize();
     const raycaster = new THREE.Raycaster();
@@ -429,6 +455,7 @@ export default function MapScene(props: Props) {
   useEffect(() => { api.current?.select(props.selectedState); }, [props.selectedState,props.selectedSiteId]);
   useEffect(()=>{api.current?.progress(props.readerChapter,props.showSilhouettes,props.filters);},[props.readerChapter,props.showSilhouettes,props.filters]);
   useEffect(() => { if (props.command) api.current?.command(props.command); }, [props.command]);
+  useEffect(()=>{api.current?.campaign(props.campaignArcId);},[props.campaignArcId]);
   const lastReaderExpanded=useRef(props.readerExpanded);
   useEffect(()=>{
     if(lastReaderExpanded.current===props.readerExpanded)return;
@@ -451,8 +478,13 @@ export default function MapScene(props: Props) {
       {visibleSites.map(site=><button key={site.id} type="button" className={`${styles.label} ${styles.story}`} data-story-id={site.id} data-major={site.tier==='major'} data-point={`${site.position},${site.tier==='major'?4.6:3.2}`} aria-label={`Open ${site.name} landmark`} aria-pressed={props.selectedSiteId===site.id} onPointerEnter={event=>{if(event.pointerType==='mouse')api.current?.hover(site.id);}} onPointerLeave={()=>api.current?.hover(null)} onFocus={()=>api.current?.hover(site.id)} onBlur={()=>api.current?.hover(null)} onClick={()=>props.onSelectSite(site.id)}><Castle size={13} strokeWidth={1.6} aria-hidden="true"/><b>{site.name}</b></button>)}
     </div>
     <div className={styles.labels}>
-      <div className={`${styles.label} ${styles.chapterMarker} ${styles.readerMarker}`} data-reader-marker="true" data-point={`${readerPoint},2.8`} aria-label={`Your chapter ${props.readerChapter}, discovery frontier`}><i/></div>
+      <div className={`${styles.label} ${styles.chapterMarker} ${styles.readerMarker}`} data-reader-marker="true" data-point={`${readerPoint},2.8`} aria-label={`Explored through chapter ${props.readerChapter}, discovery frontier`}><i/></div>
       <div className={`${styles.label} ${styles.chapterMarker} ${styles.latestMarker}`} data-point={`${LATEST_FRONTIER_POINT},3.3`} aria-label={`Latest release estimate, chapter ${LATEST_RELEASE_CHAPTER}`}><i/></div>
+    </div>
+    <div className={styles.labels} aria-label="Campaign attack directions">
+      {campaignRoutes.map(route=>{const state=STATES.find(s=>s.id===route.attacker)!;const defender=STATES.find(s=>s.id===route.defender)!;
+        return <span key={`${route.attacker}-${route.defender}`} className={`${styles.label} ${styles.campaignLabel}`} data-campaign-route={`${route.attacker}-${route.defender}`} data-point={`${route.label},3.8`} aria-label={`${state.name} attacks ${defender.name}`} style={{borderColor:state.color}}>{state.name}<span aria-hidden="true"> → </span>{defender.name}</span>;
+      })}
     </div>
     <div ref={hoverTooltip} className={styles.hoverTooltip} role="tooltip" hidden />
     <div className={styles.vignette} />

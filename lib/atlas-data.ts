@@ -1,3 +1,5 @@
+import { smoothTerritories } from "./border-paths";
+
 export type Point = readonly [number, number];
 
 export type StateId = "qin" | "zhao" | "wei" | "han" | "chu" | "yan" | "qi";
@@ -136,6 +138,10 @@ export const STATES: AtlasState[] = [
   },
 ];
 
+// Shared smoothing preserves political seams and the Hangu Pass junction.
+const curvedTerritories = smoothTerritories(STATES, [[42.5, 35]]);
+for (const state of STATES) state.territory = curvedTerritories.get(state.id)!;
+
 export const RIVERS: { name: string; points: Point[] }[] = [
   {
     name: "Yellow River",
@@ -158,9 +164,14 @@ export const RIVERS: { name: string; points: Point[] }[] = [
 
 export const HANGU_PASS: Point = [42.5, 35];
 
+const polygonBounds=new WeakMap<readonly Point[],{minX:number;maxX:number;minY:number;maxY:number}>();
+
 export function pointInPolygon(point: Point, polygon: readonly Point[]): boolean {
   if (polygon.length < 3) return false;
   const [x, y] = point;
+  let bounds=polygonBounds.get(polygon);
+  if(!bounds){bounds={minX:Math.min(...polygon.map(p=>p[0])),maxX:Math.max(...polygon.map(p=>p[0])),minY:Math.min(...polygon.map(p=>p[1])),maxY:Math.max(...polygon.map(p=>p[1]))};polygonBounds.set(polygon,bounds);}
+  if(x<bounds.minX-1e-7||x>bounds.maxX+1e-7||y<bounds.minY-1e-7||y>bounds.maxY+1e-7)return false;
   let inside = false;
 
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {

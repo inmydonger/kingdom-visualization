@@ -15,7 +15,11 @@ assert(pointInPolygon(HANGU_PASS, qin.territory) && pointInPolygon(HANGU_PASS, w
 for (let y = 0.17; y < 72; y += 0.63) {
   for (let x = 0.13; x < 100; x += 0.61) {
     const owners = STATES.filter(s => pointInPolygon([x, y], s.territory));
-    assert(owners.length <= 1, `Territories overlap at ${x},${y}: ${owners.map(s => s.name)}`);
+    const onBorder=(polygon:readonly (readonly [number,number])[])=>polygon.some((a,i)=>{
+      const b=polygon[(i+1)%polygon.length],cross=(x-a[0])*(b[1]-a[1])-(y-a[1])*(b[0]-a[0]);
+      return Math.abs(cross)<1e-7&&x>=Math.min(a[0],b[0])-1e-7&&x<=Math.max(a[0],b[0])+1e-7&&y>=Math.min(a[1],b[1])-1e-7&&y<=Math.max(a[1],b[1])+1e-7;
+    });
+    assert(owners.length <= 1 || owners.every(s=>onBorder(s.territory)), `Territories overlap at ${x},${y}: ${owners.map(s => s.name)}`);
   }
 }
 console.log("Seven states validated: distinct colors, contained capitals and labels, shared Hangu border, and no sampled territorial overlaps.");

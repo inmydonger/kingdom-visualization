@@ -5,15 +5,15 @@ import { X } from 'lucide-react';
 import { getCurrentVolume, getRecentVolumes, type AtlasVolume } from '@/lib/media-data';
 import styles from './VolumeFilmstrip.module.css';
 
-type Props = { chapter: number; onChoose: (volume: AtlasVolume) => void };
+type Props = { chapter: number; selectedVolume: number | null; onChoose: (volume: AtlasVolume) => void };
 
-export default function VolumeFilmstrip({ chapter, onChoose }: Props) {
+export default function VolumeFilmstrip({ chapter, selectedVolume, onChoose }: Props) {
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const current = getCurrentVolume(chapter);
   const recent = getRecentVolumes(chapter);
+  const current = recent.find(volume=>volume.volume===selectedVolume)??getCurrentVolume(chapter);
 
   function closeShelf() {
     panel.current?.hidePopover();
@@ -39,7 +39,7 @@ export default function VolumeFilmstrip({ chapter, onChoose }: Props) {
       <div className={styles.hand}>
         {recent.map((volume, index) => <button key={volume.volume} type="button" className={styles.cover} data-current={volume.volume === current.volume}
           style={{ '--book-rotation': `${(index - (recent.length - 1) / 2) * 3}deg` } as CSSProperties}
-          aria-label={`Volume ${volume.volume}. Jump to chapter ${volume.chapters[0]}`} aria-current={volume.volume === current.volume ? 'true' : undefined}
+          aria-label={`Volume ${volume.volume}. Revisit from chapter ${volume.chapters[0]}`} aria-current={volume.volume === current.volume ? 'true' : undefined}
           onClick={() => { closeShelf(); onChoose(volume); }}>
           <span className={styles.art}><img src={volume.file} width={80} height={116} alt={`Kingdom volume ${volume.volume} cover`} decoding="async"/></span>
           <strong>Vol. {volume.volume}</strong><small>Ch. {volume.chapters[0]}</small>

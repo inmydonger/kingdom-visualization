@@ -19,7 +19,8 @@
     "prebuild": "npm run prepare:assets",
     "check:media": "node --import tsx scripts/check-media.ts",
     "check:navigation": "node --import tsx scripts/check-navigation.ts",
-    "check:camera": "node --import tsx scripts/check-camera.ts"
+    "check:camera": "node --import tsx scripts/check-camera.ts",
+    "check:campaigns": "node --import tsx scripts/check-campaigns.ts"
   },
   "dependencies": {
     "lucide-react": "latest",

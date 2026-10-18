@@ -76,9 +76,13 @@ function texture(data: Uint8Array, colorSpace: THREE.ColorSpace): THREE.DataText
 export function createTerrainTextures(): {
   color: THREE.DataTexture;
   bump: THREE.DataTexture;
+  rock: THREE.DataTexture;
+  rockBump: THREE.DataTexture;
 } {
   const colorData = new Uint8Array(SIZE * SIZE * 4);
   const bumpData = new Uint8Array(SIZE * SIZE * 4);
+  const rockData = new Uint8Array(SIZE * SIZE * 4);
+  const rockBumpData = new Uint8Array(SIZE * SIZE * 4);
 
   for (let y = 0; y < SIZE; y++) {
     const v = y / SIZE;
@@ -97,12 +101,23 @@ export function createTerrainTextures(): {
       const tone = mottle * 16 + fine * 2 + grain * 1.4 - vein * 3 - pores * 2;
       const offset = (y * SIZE + x) * 4;
 
-      colorData[offset] = byte(232 + tone);
-      colorData[offset + 1] = byte(230 + tone);
-      colorData[offset + 2] = byte(222 + tone * 0.92);
+      const tufts = noise(u + warpX, v, 64, 128, 3119);
+      const blades = Math.max(0,noise(u,v,256,64,3989)-.3)*16;
+      const dry = smoothstep(-.05,.4,mottle);
+      const grass = mottle*22+fine*8+grain*5+tufts*7-blades;
+      colorData[offset] = byte(180+dry*22+grass);
+      colorData[offset + 1] = byte(201+dry*6+grass);
+      colorData[offset + 2] = byte(142+dry*15+grass*.8);
+      rockData[offset]=byte(194+tone*1.8+sediment*9);
+      rockData[offset+1]=byte(190+tone*1.7+sediment*8);
+      rockData[offset+2]=byte(176+tone*1.5+sediment*7);
+      rockData[offset+3]=255;
       colorData[offset + 3] = 255;
 
-      const height = byte(128 + mottle * 9 + sediment * 9 + fine * 4 + grain * 2 - pores * 11 - vein * 2);
+      const stoneHeight = byte(128+mottle*22+sediment*18+fine*12+grain*7-pores*28-vein*14);
+      rockBumpData[offset]=rockBumpData[offset+1]=rockBumpData[offset+2]=stoneHeight;
+      rockBumpData[offset+3]=255;
+      const height = byte(128+mottle*5+fine*8+tufts*8+grain*5-blades);
       bumpData[offset] = height;
       bumpData[offset + 1] = height;
       bumpData[offset + 2] = height;
@@ -112,7 +127,28 @@ export function createTerrainTextures(): {
 
   const color = texture(colorData, THREE.SRGBColorSpace);
   const bump = texture(bumpData, THREE.NoColorSpace);
-  color.name = "Atlas mineral parchment";
+  color.name = "Atlas grass, dry meadow, and fine blades";
   bump.name = "Atlas sediment and stone pores";
-  return { color, bump };
+  const rock=texture(rockData,THREE.SRGBColorSpace),rockBump=texture(rockBumpData,THREE.NoColorSpace);
+  rock.name='Atlas weathered strata and mineral veins';rockBump.name='Atlas crags and stone pores';
+  return { color, bump, rock, rockBump };
+}
+
+/** Blend grass into weathered stone using the actual terrain's height and slope. */
+export function applyTerrainBiome(material:THREE.MeshStandardMaterial,textures:ReturnType<typeof createTerrainTextures>) {
+  material.onBeforeCompile=shader=>{
+    shader.uniforms.uRockMap={value:textures.rock};
+    shader.uniforms.uRockBump={value:textures.rockBump};
+    shader.vertexShader='attribute float aRockBlend; varying float vRockBlend;\n'+shader.vertexShader;
+    shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvRockBlend=aRockBlend;');
+    shader.fragmentShader='uniform sampler2D uRockMap; uniform sampler2D uRockBump; varying float vRockBlend;\n'+shader.fragmentShader;
+    shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#ifdef USE_MAP
+      vec4 biome = mix(texture2D(map,vMapUv),texture2D(uRockMap,vMapUv),vRockBlend);
+      diffuseColor *= biome;
+    #endif`);
+    const bumpChunk=THREE.ShaderChunk.bumpmap_pars_fragment.replace(/texture2D\( bumpMap, ([^)]*) \)\.x/g,
+      'mix(texture2D(bumpMap,$1).x,texture2D(uRockBump,$1).x,vRockBlend)');
+    shader.fragmentShader=shader.fragmentShader.replace('#include <bumpmap_pars_fragment>',bumpChunk);
+  };
+  material.customProgramCacheKey=()=>'atlas-grass-rock-v1';
 }

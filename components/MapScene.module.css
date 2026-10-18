@@ -36,3 +36,7 @@
 .latestMarker > i { box-shadow:0 0 0 3px #a6b5b033,0 2px 8px #0008; }
 @media (prefers-reduced-motion:reduce) { .story { transition:none; } }
 @media (max-width: 700px) { .state { font-size: 17px; letter-spacing: .08em; } .state small { display: none; } .capital { font-size: 9px; padding: 3px 4px; min-height: 25px; } .capital::before { margin-right: 3px; font-size: 6px; } .state[data-state='han'], .state[data-state='wei'] { font-size: 12px; } .natural, .sea, .pass { display: none; } .vignette { box-shadow: inset 0 0 60px #0a16194d; } }
+
+.campaignLabel { z-index:4; padding:5px 9px; border:1px solid; border-radius:5px; background:#152026ec; color:#f2eee2; font:500 11px var(--font-ui); box-shadow:0 2px 12px #0004; white-space:nowrap; pointer-events:none; }
+.campaignLabel > span { color:#d6c397; }
+@media (max-width:720px) { .campaignLabel { padding:4px 6px; font-size:10px; } }

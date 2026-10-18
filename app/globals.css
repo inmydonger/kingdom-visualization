@@ -131,3 +131,6 @@ kbd { display:inline-block; padding:0 5px; border:1px solid #ffffff25; border-ra
 }
 @media (prefers-reduced-transparency:reduce), (prefers-contrast:more) { :root { --floating-ink:var(--ink-900); } .tool-button,.zoom-controls,.legend-popover { background:var(--ink-900); backdrop-filter:none; } }
 @media (forced-colors:active) { .tool-button,.zoom-controls,.legend-popover { border-color:CanvasText; } button:focus-visible,a:focus-visible { outline-color:Highlight; } }
+
+.arc-context { max-width:248px; padding:4px 9px; border-radius:10px; background:var(--floating-ink); color:var(--color-muted); font-size:10px; line-height:1.4; text-align:center; }
+.legend-keys .legend-arrow { height:5px; background:var(--color-accent-bright); border:0; clip-path:polygon(0 20%,65% 20%,65% 0,100% 50%,65% 100%,65% 80%,0 80%); }

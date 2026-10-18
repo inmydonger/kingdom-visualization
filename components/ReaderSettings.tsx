@@ -7,12 +7,13 @@ import styles from './ReaderSettings.module.css';
 
 type ReaderSettingsProps = {
   chapter: number;
+  exploredChapter: number;
   onChapterChange: (chapter: number) => void;
   showSilhouettes: boolean;
   onShowSilhouettesChange: (visible: boolean) => void;
 };
 
-export default function ReaderSettings({ chapter, onChapterChange, showSilhouettes, onShowSilhouettesChange }: ReaderSettingsProps) {
+export default function ReaderSettings({ chapter, exploredChapter, onChapterChange, showSilhouettes, onShowSilhouettesChange }: ReaderSettingsProps) {
   const id = useId();
   const dialog = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -63,21 +64,21 @@ export default function ReaderSettings({ chapter, onChapterChange, showSilhouett
           <h2 id={`${id}-title`}>Your reading progress</h2>
           <button type="button" className={styles.close} aria-label="Close reader settings" onClick={closeSettings}><X size={18} strokeWidth={1.6} aria-hidden="true" /></button>
         </div>
-        <p id={`${id}-description`} className={styles.description}>Choose your chapter and how unreached places appear.</p>
+        <p id={`${id}-description`} className={styles.description}>Set your reading position. Explored ground stays revealed when you revisit earlier chapters.</p>
         <form className={styles.form} onSubmit={applyChapter} noValidate>
           <label htmlFor={`${id}-chapter`}>Last chapter you’ve read</label>
           <div className={styles.inputRow}>
             <input ref={input} id={`${id}-chapter`} name="chapter" type="number" inputMode="numeric" min={1} max={LATEST_RELEASE_CHAPTER} step={1} placeholder={String(DEFAULT_READER_CHAPTER)} value={draft} aria-invalid={Boolean(error)} aria-describedby={`${id}-latest${error ? ` ${id}-error` : ''}`} onChange={(event) => { setDraft(event.target.value); setError(''); }} />
             <button type="submit" className={styles.apply}>Apply chapter</button>
           </div>
-          <p id={`${id}-latest`} className={styles.caption}>Latest release estimate: chapter {LATEST_RELEASE_CHAPTER}</p>
+          <p id={`${id}-latest`} className={styles.caption}>Explored through chapter {exploredChapter}. Latest release estimate: {LATEST_RELEASE_CHAPTER}</p>
           <p id={`${id}-error`} className={styles.error} role="status">{error}</p>
         </form>
         <fieldset className={styles.unexplored}>
           <legend>Unexplored areas</legend>
           <label className={styles.visibilityOption}>
             <input type="radio" name={`${id}-unexplored`} value="silhouettes" checked={showSilhouettes} onChange={() => onShowSilhouettesChange(true)} aria-describedby={`${id}-silhouettes-note`} />
-            <span>Faint silhouettes<small id={`${id}-silhouettes-note`}>Grey terrain and unnamed shapes beyond your chapter.</small></span>
+            <span>Faint silhouettes<small id={`${id}-silhouettes-note`}>Grey terrain and unnamed shapes beyond your saved exploration.</small></span>
           </label>
           <label className={styles.visibilityOption}>
             <input type="radio" name={`${id}-unexplored`} value="hidden" checked={!showSilhouettes} onChange={() => onShowSilhouettesChange(false)} aria-describedby={`${id}-hidden-note`} />
