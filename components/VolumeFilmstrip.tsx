@@ -1,62 +1,50 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, LockKeyhole, X } from 'lucide-react';
-import { VOLUMES, getCurrentVolume, type AtlasVolume } from '@/lib/media-data';
+import { useId, useRef, useState, type CSSProperties } from 'react';
+import { X } from 'lucide-react';
+import { getCurrentVolume, getRecentVolumes, type AtlasVolume } from '@/lib/media-data';
 import styles from './VolumeFilmstrip.module.css';
 
-type Props = { chapter:number; dockOpen:boolean; onChoose:(volume:AtlasVolume)=>void };
+type Props = { chapter: number; onChoose: (volume: AtlasVolume) => void };
 
-export default function VolumeFilmstrip({chapter,dockOpen,onChoose}:Props){
-  const id=useId();
-  const trigger=useRef<HTMLButtonElement>(null);
-  const panel=useRef<HTMLDivElement>(null);
-  const strip=useRef<HTMLDivElement>(null);
-  const [open,setOpen]=useState(false);
-  const [scrollEdges,setScrollEdges]=useState({start:true,end:false});
-  const current=getCurrentVolume(chapter);
+export default function VolumeFilmstrip({ chapter, onChoose }: Props) {
+  const id = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const current = getCurrentVolume(chapter);
+  const recent = getRecentVolumes(chapter);
 
-  useEffect(()=>{
-    if(!open)return;
-    const frame=requestAnimationFrame(()=>{
-      const row=strip.current,cover=row?.querySelector<HTMLElement>('[data-current="true"]');
-      if(row&&cover){
-        row.scrollLeft=cover.offsetLeft-row.clientWidth/2+cover.clientWidth/2;
-        setScrollEdges({start:row.scrollLeft<2,end:row.scrollLeft+row.clientWidth>=row.scrollWidth-2});
-      }
-    });
-    return()=>cancelAnimationFrame(frame);
-  },[open,current.volume]);
-
-  function closeStrip(){
+  function closeShelf() {
     panel.current?.hidePopover();
-    trigger.current?.focus({preventScroll:true});
+    trigger.current?.focus({ preventScroll: true });
   }
 
-  return <div className={styles.root} data-dock-open={dockOpen}>
-    <button ref={trigger} type="button" className={styles.chip} popoverTarget={id} aria-controls={id} aria-expanded={open} aria-label={`Volume filmstrip. Current volume ${current.volume}`}>
-      <img src={current.file} width={30} height={43} alt=""/>
-      <span><small>Your bookshelf</small><strong>Vol {current.volume}</strong></span>
-      <ChevronRight size={13} aria-hidden="true"/>
+  return <div className={styles.root}>
+    <button ref={trigger} type="button" className={styles.stack} popoverTarget={id} aria-controls={id} aria-expanded={open} aria-label={`Recent volume bookshelf. Current volume ${current.volume}. ${recent.length} volumes available.`}>
+      <span className={styles.books} aria-hidden="true">
+        {recent.map((volume, index) => <span key={volume.volume} className={styles.book} style={{ '--book-index': index, '--book-count': recent.length } as CSSProperties}>
+          <img src={volume.file} width={70} height={100} alt="" decoding="async"/>
+        </span>)}
+      </span>
+      <span className={styles.caption}>Vol. {current.volume}<span aria-hidden="true">⌃</span></span>
     </button>
-    <div ref={panel} id={id} popover="auto" className={styles.panel} role="region" aria-label="Volume bookshelf" onToggle={event=>setOpen(event.newState==='open')} onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeStrip();}}}>
+    <div ref={panel} id={id} popover="auto" className={styles.panel} role="region" aria-labelledby={`${id}-title`} onToggle={event => setOpen(event.newState === 'open')} onKeyDown={event => {
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeShelf(); }
+    }}>
       <div className={styles.heading}>
-        <div><span>The story, bound</span><h2>Volume bookshelf <small>80 volumes</small></h2></div>
-        <button type="button" aria-label="Close volume filmstrip" onClick={closeStrip}><X size={17} aria-hidden="true"/></button>
+        <div><h2 id={`${id}-title`}>Your recent volumes</h2><p>Choose a cover to revisit its story.</p></div>
+        <button type="button" aria-label="Close volume bookshelf" onClick={closeShelf}><X size={17} aria-hidden="true"/></button>
       </div>
-      <div className={styles.strip} ref={strip} onScroll={event=>{const row=event.currentTarget,start=row.scrollLeft<2,end=row.scrollLeft+row.clientWidth>=row.scrollWidth-2;setScrollEdges(previous=>previous.start===start&&previous.end===end?previous:{start,end});}}>
-        {VOLUMES.map(volume=>{
-          const locked=volume.chapters[0]>chapter;
-          return <button key={volume.volume} type="button" className={styles.cover} data-current={volume.volume===current.volume} data-locked={locked} disabled={locked}
-            title={locked?`Undiscovered at chapter ${chapter}`:`Chapters ${volume.chapters[0]}–${volume.chapters[1]}`}
-            aria-label={`Volume ${volume.volume}${locked?`. Locked beyond chapter ${chapter}`:`. Jump to chapter ${volume.chapters[0]}`}`}
-            onClick={()=>{if(!locked)onChoose(volume);}}>
-            <span className={styles.art}><img src={volume.file} width={80} height={116} alt={`Kingdom volume ${volume.volume} cover`} loading="lazy" decoding="async"/>{locked&&<LockKeyhole size={15} aria-hidden="true"/>}</span>
-            <strong>Vol {volume.volume}</strong><small>{volume.chapters[0]}–{volume.chapters[1]}</small>
-          </button>;
-        })}
+      <div className={styles.hand}>
+        {recent.map((volume, index) => <button key={volume.volume} type="button" className={styles.cover} data-current={volume.volume === current.volume}
+          style={{ '--book-rotation': `${(index - (recent.length - 1) / 2) * 3}deg` } as CSSProperties}
+          aria-label={`Volume ${volume.volume}. Jump to chapter ${volume.chapters[0]}`} aria-current={volume.volume === current.volume ? 'true' : undefined}
+          onClick={() => { closeShelf(); onChoose(volume); }}>
+          <span className={styles.art}><img src={volume.file} width={80} height={116} alt={`Kingdom volume ${volume.volume} cover`} decoding="async"/></span>
+          <strong>Vol. {volume.volume}</strong><small>Ch. {volume.chapters[0]}</small>
+        </button>)}
       </div>
-      <div className={styles.footer}><p>Scroll covers or choose a volume to travel.</p><div><button type="button" aria-label="Earlier volumes" disabled={scrollEdges.start} onClick={()=>strip.current?.scrollBy({left:-320,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}><ChevronLeft size={16} aria-hidden="true"/></button><button type="button" aria-label="Later volumes" disabled={scrollEdges.end} onClick={()=>strip.current?.scrollBy({left:320,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}><ChevronRight size={16} aria-hidden="true"/></button></div></div>
     </div>
   </div>;
 }

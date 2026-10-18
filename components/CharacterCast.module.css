@@ -1,6 +1,6 @@
-.trigger { display: flex; align-items: center; justify-content: center; gap: 7px; height: 38px; padding: 0 11px; border: 1px solid #ffffff1a; border-radius: 6px; background: #182128a6; color: var(--color-muted); font-size: 11px; backdrop-filter: blur(16px); }
+.trigger { display: flex; align-items: center; justify-content: center; gap: 7px; width: 44px; height: 44px; padding: 0; border: 1px solid #ffffff1a; border-radius: 50%; background: var(--floating-ink); color: var(--color-text); font-size: 11px; backdrop-filter: blur(20px); box-shadow: 0 4px 16px #0002; }
 .trigger[aria-expanded="true"] { border-color: #b8a17466; color: var(--color-accent-bright); }
-.panel { position: fixed; inset: 158px 28px auto auto; width: 356px; max-width: calc(100vw - 32px); max-height: min(580px, calc(100dvh - 190px)); margin: 0; padding: 0; overflow-y: auto; overscroll-behavior: contain; border: 1px solid #b8a1744d; border-radius: 10px; background: #131d23ed; color: var(--color-text); backdrop-filter: blur(24px) saturate(1.2); box-shadow: 0 20px 64px #0007, 0 1px 0 #ffffff0a inset; scrollbar-width: thin; scrollbar-color: var(--ink-700) transparent; }
+.panel { position: fixed; inset: 24px 80px auto auto; width: 356px; max-width: calc(100vw - 32px); max-height: min(580px, calc(100dvh - 48px)); margin: 0; padding: 0; overflow-y: auto; overscroll-behavior: contain; border: 1px solid #b8a1744d; border-radius: 18px; background: #131d23ed; color: var(--color-text); backdrop-filter: blur(24px) saturate(1.2); box-shadow: 0 20px 64px #0007, 0 1px 0 #ffffff0a inset; scrollbar-width: thin; scrollbar-color: var(--ink-700) transparent; }
 .panel { opacity: 0; transform: translateY(-6px); transform-origin: top right; pointer-events: none; transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out), display 200ms allow-discrete, overlay 200ms allow-discrete; }
 .panel::backdrop { background: transparent; }
 .panel:popover-open { opacity: 1; transform: translateY(0); pointer-events: auto; }
@@ -20,6 +20,8 @@
 .footer { display: flex; justify-content: space-between; gap: 10px; padding: 12px 20px; border-top: 1px solid #ffffff12; color: var(--color-subtle); font-size: 10px; font-variant-numeric: tabular-nums; }
 .trigger:focus-visible, .character:focus-visible, .close:focus-visible { outline: 2px solid var(--color-accent-bright); outline-offset: 4px; }
 @media (hover: hover) and (pointer: fine) { .trigger:hover, .close:hover { background: #26323aa6; color: var(--color-text); } .character:hover .thumbnail { transform: translateY(-3px); border-color: var(--color-accent-bright); } .character:hover { color: var(--color-text); } }
-@media (max-width: 720px) { .trigger { width: 44px; height: 44px; padding: 0; } .trigger > span { display: none; } .panel { inset: 140px 16px auto auto; max-height: calc(100dvh - 252px); } }
+@media (max-width: 720px) { .trigger { width: 44px; height: 44px; padding: 0; } .trigger > span { display: none; } .panel { inset: 68px 16px auto auto; max-height: calc(100dvh - 92px); } }
 @media (prefers-reduced-motion: reduce) { .panel { transform: none; transition: opacity 100ms var(--ease-out), display 100ms allow-discrete, overlay 100ms allow-discrete; } @starting-style { .panel:popover-open { opacity: 0; transform: none; } } .thumbnail { transition: border-color 100ms ease; } .character:hover .thumbnail { transform: none; } }
 @media (forced-colors: active) { .trigger, .panel, .thumbnail { border-color: CanvasText; } }
+
+@media (prefers-reduced-transparency:reduce), (prefers-contrast:more) { .panel,.trigger { background:var(--ink-900); backdrop-filter:none; } }

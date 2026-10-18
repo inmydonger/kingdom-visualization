@@ -25,8 +25,6 @@ type Props = {
   selectedSiteId: string|null;
   readerExpanded?: boolean;
   onSelectSite: (id:string|null)=>void;
-  terrainVisible: boolean;
-  labelsVisible: boolean;
   readerChapter: number;
   showSilhouettes: boolean;
   filters: LandmarkFilters;
@@ -42,7 +40,7 @@ export default function MapScene(props: Props) {
   callbacks.current = props;
   const readerPoint=useMemo(()=>getReaderFrontierPoint(props.readerChapter),[props.readerChapter]);
   const visibleSites=getVisibleSites(props.readerChapter,props.filters,props.showSilhouettes);
-  const api = useRef<{ command: (c: Command) => void; select: (id: StateId | null) => void; terrain: (visible: boolean) => void; progress:(chapter:number,silhouettes:boolean,filters:LandmarkFilters)=>void; hover:(id:string|null,tooltip?:boolean)=>void } | null>(null);
+  const api = useRef<{ command: (c: Command) => void; select: (id: StateId | null) => void; progress:(chapter:number,silhouettes:boolean,filters:LandmarkFilters)=>void; hover:(id:string|null,tooltip?:boolean)=>void } | null>(null);
 
   useEffect(() => {
     const container = host.current!;
@@ -53,7 +51,7 @@ export default function MapScene(props: Props) {
     canvas.className = styles.canvas;
     canvas.tabIndex = 0;
     canvas.setAttribute("role", "application");
-    canvas.setAttribute("aria-label", "Interactive Warring States map. Drag to pan, scroll or pinch to zoom. Arrow keys pan; plus and minus zoom; Home resets. States are also available in the Seven States hand.");
+    canvas.setAttribute("aria-label", "Interactive Warring States map. Drag to pan, scroll or pinch to zoom. Arrow keys pan; plus and minus zoom; Home resets. Choose story arcs using the control below your chapter.");
     container.prepend(canvas);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -111,7 +109,7 @@ export default function MapScene(props: Props) {
       landmarks.push({object:capital,point:state.capital.position,stateId:state.id});
       scene.add(capital);
     }
-    let reliefVisible = callbacks.current.terrainVisible;
+    const reliefVisible = true;
     let readerChapter=callbacks.current.readerChapter??DEFAULT_READER_CHAPTER;
     let showSilhouettes=callbacks.current.showSilhouettes;
     let activeFilters=normalizeFilters(callbacks.current.filters,readerChapter);
@@ -168,12 +166,6 @@ export default function MapScene(props: Props) {
         const py = (1 - projected.y) * h / 2;
         node.style.transform = `translate(${px}px, ${py}px) translate(-50%, -50%)`;
         if(node.dataset.storyId&&px>=0&&px<=w&&py>=0&&py<=h)storyLabels.push({node,x:px,y:py});
-        if(node.classList.contains(styles.chapterMarker)) {
-          const badge=node.querySelector('span')!;
-          const left=px-node.offsetWidth/2+badge.offsetLeft;
-          const clampedLeft=THREE.MathUtils.clamp(left,10,Math.max(10,w-badge.offsetWidth-10));
-          badge.style.transform=`translateX(${clampedLeft-left}px)`;
-        }
         node.style.visibility = px < -100 || px > w + 100 || py < -50 || py > h + 50 ? "hidden" : "visible";
       }
       // Keep nearby miniatures individually reachable, with short leaders back to their locations.
@@ -241,14 +233,13 @@ export default function MapScene(props: Props) {
         const landscape=(h<=500&&w>h)||(w>720&&h<=600);
         if(callbacks.current.selectedSiteId===site.id&&(w>720||landscape)){
           const cardWidth=landscape?Math.min(360,w*0.52):360;
-          const shift=(cardWidth+(landscape?12:22))/2/w*(camera.right-camera.left)/zoom;
+          const shift=(cardWidth+(landscape?12:80))/2/w*(camera.right-camera.left)/zoom;
           p.addScaledVector(new THREE.Vector3(1,0,-1).normalize(),shift);
         }else if(callbacks.current.selectedSiteId===site.id){
-          const short=h<=600;
           const expanded=callbacks.current.readerExpanded;
-          const sheetHeight=short?Math.max(0,h-256):expanded?Math.max(0,h-272):Math.min(h*0.56,Math.max(0,h-280));
-          const coveredBottom=(short?96:112)+sheetHeight;
-          const topClearance=expanded||short?108:200;
+          const sheetHeight=expanded?Math.max(0,h-148):Math.min(h*0.4,Math.max(0,h-156));
+          const coveredBottom=16+sheetHeight;
+          const topClearance=120;
           const shift=Math.max(0,coveredBottom-topClearance)/2/h*(camera.top-camera.bottom)/zoom*Math.sqrt(3);
           p.addScaledVector(new THREE.Vector3(1,0,1).normalize(),shift);
         }
@@ -268,14 +259,9 @@ export default function MapScene(props: Props) {
       if(selected){selectedRing.position.copy(selected.object.position);selectedRing.position.y+=0.12;selectedRing.scale.setScalar(selected.site.tier==='major'?1.65:1);}
       invalidate();
     }
-    function terrain(visible: boolean) {
-      reliefVisible = visible; map.setRelief(visible); woodlands.visible = visible;
-      for (const {object,point} of landmarks) object.position.y = reliefHeight(elevation(point[0]-50,point[1]-36),visible) + 0.05;
-      for(const {object,ghost,site} of storyObjects)object.position.y=ghost.position.y=reliefHeight(elevation(site.position[0]-50,site.position[1]-36),visible)+0.08;
-      select(callbacks.current.selectedState);
-      if(hoveredSiteId){const id=hoveredSiteId;hoveredSiteId=null;hover(id,showHoverTooltip);}
-      renderer.shadowMap.needsUpdate = true; invalidate();
-    }
+    map.setRelief(true);
+    for (const {object,point} of landmarks) object.position.y = reliefHeight(elevation(point[0]-50,point[1]-36),true) + 0.05;
+    for(const {object,ghost,site} of storyObjects)object.position.y=ghost.position.y=reliefHeight(elevation(site.position[0]-50,site.position[1]-36),true)+0.08;
     function progress(chapter:number,silhouettes:boolean,filters:LandmarkFilters) {
       readerChapter=chapter;showSilhouettes=silhouettes;activeFilters=normalizeFilters(filters,chapter);map.setChapter(chapter);map.setHidden(!silhouettes);
       frontier.geometry.dispose();frontier.geometry=createFrontierGeometry(chapter);
@@ -298,9 +284,8 @@ export default function MapScene(props: Props) {
       }
       select(callbacks.current.selectedState);renderer.shadowMap.needsUpdate=true;invalidate();
     }
-    api.current = { command, select, terrain, progress, hover };
+    api.current = { command, select, progress, hover };
     select(callbacks.current.selectedState);
-    terrain(callbacks.current.terrainVisible);
     progress(readerChapter,callbacks.current.showSilhouettes,callbacks.current.filters);
     let homeZoom = 1;
     const mapExtent = STATES.flatMap(state => state.territory.map(p => mapWorldPoint(p, 2)));
@@ -442,7 +427,6 @@ export default function MapScene(props: Props) {
   }, []);
 
   useEffect(() => { api.current?.select(props.selectedState); }, [props.selectedState,props.selectedSiteId]);
-  useEffect(() => { api.current?.terrain(props.terrainVisible); }, [props.terrainVisible]);
   useEffect(()=>{api.current?.progress(props.readerChapter,props.showSilhouettes,props.filters);},[props.readerChapter,props.showSilhouettes,props.filters]);
   useEffect(() => { if (props.command) api.current?.command(props.command); }, [props.command]);
   const lastReaderExpanded=useRef(props.readerExpanded);
@@ -455,7 +439,7 @@ export default function MapScene(props: Props) {
   function choose(id: StateId) { props.onSelectState(id); api.current?.command({ type: "focus", stateId: id, id: 0 }); }
 
   return <div className={styles.scene} ref={host}>
-    <div className={styles.labels} style={{ display: props.labelsVisible ? undefined : "none" }}>
+    <div className={styles.labels}>
       {STATES.map(state => <div key={state.id} className={`${styles.label} ${styles.state}`} data-state={state.id} data-point={`${state.label},0.4`} aria-hidden="true"><small>{state.hanzi}</small>{state.name.toUpperCase()}</div>)}
       {STATES.map(state => <button key={`${state.id}-capital`} className={`${styles.label} ${styles.capital}`} data-capital="true" data-capital-state={state.id} data-point={`${state.capital.position},-2.6`} onClick={() => choose(state.id)} aria-label={`${state.capital.name}, capital of ${state.name}`}>{state.capital.name}</button>)}
       <span className={`${styles.label} ${styles.pass}`} data-pass="true" data-point={`${HANGU_PASS},3`}>Hangu Pass</span>
@@ -467,8 +451,8 @@ export default function MapScene(props: Props) {
       {visibleSites.map(site=><button key={site.id} type="button" className={`${styles.label} ${styles.story}`} data-story-id={site.id} data-major={site.tier==='major'} data-point={`${site.position},${site.tier==='major'?4.6:3.2}`} aria-label={`Open ${site.name} landmark`} aria-pressed={props.selectedSiteId===site.id} onPointerEnter={event=>{if(event.pointerType==='mouse')api.current?.hover(site.id);}} onPointerLeave={()=>api.current?.hover(null)} onFocus={()=>api.current?.hover(site.id)} onBlur={()=>api.current?.hover(null)} onClick={()=>props.onSelectSite(site.id)}><Castle size={13} strokeWidth={1.6} aria-hidden="true"/><b>{site.name}</b></button>)}
     </div>
     <div className={styles.labels}>
-      <div className={`${styles.label} ${styles.chapterMarker} ${styles.readerMarker}`} data-reader-marker="true" data-point={`${readerPoint},2.8`} aria-label={`Your chapter ${props.readerChapter}, discovery frontier`}><i/><span>Your chapter<strong>{props.readerChapter}</strong></span></div>
-      <div className={`${styles.label} ${styles.chapterMarker} ${styles.latestMarker}`} data-point={`${LATEST_FRONTIER_POINT},3.3`} aria-label={`Latest release estimate, chapter ${LATEST_RELEASE_CHAPTER}`}><i/><span>Latest release<strong>{LATEST_RELEASE_CHAPTER}</strong></span></div>
+      <div className={`${styles.label} ${styles.chapterMarker} ${styles.readerMarker}`} data-reader-marker="true" data-point={`${readerPoint},2.8`} aria-label={`Your chapter ${props.readerChapter}, discovery frontier`}><i/></div>
+      <div className={`${styles.label} ${styles.chapterMarker} ${styles.latestMarker}`} data-point={`${LATEST_FRONTIER_POINT},3.3`} aria-label={`Latest release estimate, chapter ${LATEST_RELEASE_CHAPTER}`}><i/></div>
     </div>
     <div ref={hoverTooltip} className={styles.hoverTooltip} role="tooltip" hidden />
     <div className={styles.vignette} />

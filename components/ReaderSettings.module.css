@@ -7,8 +7,8 @@
   min-height: 40px;
   padding: 8px 10px;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background:#111c20e8;
+  border-radius: 22px;
+  background:var(--floating-ink);
   backdrop-filter:blur(22px);
   color: var(--color-muted);
   font-size: 12px;
@@ -22,8 +22,8 @@
 
 .dialog {
   position: fixed;
-  inset: 100px 30px auto auto;
-  margin: 0;
+  inset: 120px auto auto 50%;
+  margin: 0 0 0 -180px;
   width: 360px;
   max-width: calc(100% - 32px);
   max-height: calc(100dvh - 124px);
@@ -34,11 +34,11 @@
   background:#111c20e8;
   backdrop-filter:blur(22px);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 18px;
   box-shadow: 0 16px 60px #0006;
   opacity: 0;
   transform: translateY(-6px);
-  transform-origin: top right;
+  transform-origin: top center;
   pointer-events: none;
   transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out), display 200ms allow-discrete, overlay 200ms allow-discrete;
 }
@@ -78,16 +78,18 @@
 }
 
 @media (max-height: 760px) and (min-width: 721px) {
-  .dialog { inset-block-start: 88px; max-height: calc(100dvh - 112px); }
+  .dialog { inset-block-start: 120px; max-height: calc(100dvh - 144px); }
 }
 
 @media (max-width: 720px) {
   .trigger { min-height: 44px; gap: 6px; padding-inline: 8px; }
   .fullLabel { display: none; }
   .compactLabel { display: inline; }
-  .dialog { inset: 88px 16px auto auto; width: 360px; max-height: calc(100dvh - 104px); padding: 20px; }
+  .dialog { inset: 120px 16px auto 16px; margin:0 auto; width:360px; max-height:calc(100dvh - 144px); padding:20px; }
 }
 
 @media (forced-colors: active) {
   .trigger, .inputRow input, .apply { border: 1px solid ButtonText; }
 }
+
+@media (prefers-reduced-transparency:reduce), (prefers-contrast:more) { .trigger,.dialog { background:var(--ink-900); backdrop-filter:none; } }

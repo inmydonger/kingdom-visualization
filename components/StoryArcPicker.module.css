@@ -1,0 +1,9 @@
+.picker { position:relative; width:100%; max-width:248px; }
+.picker select { display:block; appearance:none; width:100%; min-height:36px; padding:7px 31px 7px 15px; overflow:hidden; text-overflow:ellipsis; border:1px solid #ffffff1a; border-radius:18px; background:var(--floating-ink); backdrop-filter:blur(20px) saturate(1.2); color:var(--color-muted); font-family:var(--font-ui); font-size:12px; cursor:pointer; box-shadow:0 4px 18px #00000010; }
+.picker svg { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--color-accent); pointer-events:none; }
+.picker select:focus-visible { outline:2px solid var(--color-accent-bright); outline-offset:3px; }
+.picker select:active { background:var(--color-hover); }
+@media (hover:hover) and (pointer:fine) { .picker select:hover { border-color:#b8a17477; color:var(--color-text); } }
+@media (max-width:720px) { .picker { max-width:194px; } .picker select { min-height:44px; font-size:16px; padding-left:12px; } }
+@media (prefers-reduced-transparency:reduce), (prefers-contrast:more) { .picker select { background:var(--ink-900); backdrop-filter:none; } }
+@media (forced-colors:active) { .picker select { border-color:ButtonText; } }

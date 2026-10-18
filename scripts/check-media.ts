@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { CHARACTERS, VOLUMES, getCharacterByName, getCurrentVolume, getRevealedCharacters, getVolumeArc } from "../lib/media-data";
+import { CHARACTERS, VOLUMES, getCharacterByName, getCurrentVolume, getRecentVolumes, getRevealedCharacters, getVolumeArc } from "../lib/media-data";
 import { ARCS } from "../lib/story-data";
 import { STATES } from "../lib/atlas-data";
 
@@ -13,6 +13,15 @@ assert.equal(getCurrentVolume(845).volume, 77);
 assert.equal(getCurrentVolume(1).volume, 1);
 assert.equal(getCurrentVolume(878).volume, 80);
 assert.equal(getCurrentVolume(890).volume, 80);
+assert.deepEqual(getRecentVolumes(845).map(volume => volume.volume), [73, 74, 75, 76, 77]);
+assert.deepEqual(getRecentVolumes(1).map(volume => volume.volume), [1]);
+assert.deepEqual(getRecentVolumes(890).map(volume => volume.volume), [76, 77, 78, 79, 80]);
+for (const volume of VOLUMES) {
+  const shelf = getRecentVolumes(volume.chapters[0]);
+  assert(shelf.length <= 5);
+  assert.equal(shelf.at(-1)?.volume, volume.volume);
+  assert(shelf.every(book => book.chapters[0] <= volume.chapters[0]), 'Recent volumes never reveal a future cover');
+}
 assert.equal(getVolumeArc(60)?.id, "zhao-crisis");
 assert.equal(getVolumeArc(77)?.id, "conquest-of-han");
 assert.equal(getVolumeArc(78)?.id, "great-qin-zhao-war");

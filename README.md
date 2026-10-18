@@ -1,6 +1,6 @@
 # Kingdom: Warring States Atlas
 
-Phase 5 of a reader-aware 3D atlas for *Kingdom*. Built with Next.js App Router, React, TypeScript, Tailwind CSS, Three.js, and Lucide. The full-screen isometric map has sculpted relief, painterly terrain textures, coastal cliffs, and woodland groves. Everything floats over the map, with no sidebar or header bar. Chapter-based fog reveals 20 landmarks covering 28 arcs; state cards, a volume bookshelf, and character portraits help explore the stories you have reached.
+Phase 5 of a reader-aware 3D atlas for *Kingdom*. Built with Next.js App Router, React, TypeScript, Tailwind CSS, Three.js, and Lucide. The full-screen isometric map has sculpted relief, painterly terrain textures, coastal cliffs, and woodland groves. Everything floats over the map, with no sidebar or header bar. Chapter-based fog reveals 20 landmarks covering 28 arcs; a centered story-arc picker, a five-volume comic stack, and character portraits help explore the stories you have reached.
 
 ## Run locally
 
@@ -9,7 +9,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Next.js. Drag to pan, scroll or pinch to zoom, and choose a state or capital to focus the camera. Use the Layers control to toggle mountain relief and labels. Focus the canvas for arrow-key panning, `+`/`-` zoom, and `Home` to reset.
+Open the local URL printed by Next.js. Drag to pan, scroll or pinch to zoom, and choose a state or capital to focus the camera. Focus the canvas for arrow-key panning, `+`/`-` zoom, and `Home` to reset.
 
 The landscape spans 2.5 times its original width and depth while miniatures retain their original dimensions. The opening view is closer, and landmark focus and the zoom range cover the expanded world. Compact pins reveal their names on hover or focus; close views show full labels.
 
@@ -17,11 +17,11 @@ The landscape spans 2.5 times its original width and depth while miniatures reta
 
 Camera flights ease into their destination and stop immediately when you drag, pinch, or scroll. Choosing a new destination replaces the current flight from its current position. Arrow-key pans are immediate. Hovering a discovered miniature or focusing its pin adds a brass highlight and name; unreached silhouettes never become interactive. The map renders on demand and sleeps when the scene is still.
 
-The loading seal fades after the first successful map frame. A small first-use guide explains navigation and the state hand; dismissing it or exploring stores `kingdom-atlas-guide-dismissed` in this browser. The help button keeps the full guide available.
+The loading seal fades after the first successful map frame. The icon-only rail on the right contains Cast, the map guide, and a hidden legend. The legend holds discovery keys, chapter markers, and scale notes, keeping the resting map clear.
 
-On phones, the reader is a floating bottom sheet. Tap its handle or swipe the handle upward/downward to switch between a compact and expanded view; Arrow Up/Down on the focused handle does the same. Its contents scroll independently, while the close button and completion footer remain reachable. The camera follows the sheet’s size. Expanded reading clears the small map controls from that space; close the card to restore them and center its landmark. Short landscape screens use a taller floating card on the right instead.
+On phones, the reader is a floating bottom sheet. Tap its handle or swipe the handle upward/downward to switch between a compact and expanded view; Arrow Up/Down on the focused handle does the same. Its contents scroll independently, while the close button and completion footer remain reachable. The camera follows the sheet’s size. Opening a reader card tucks away the bottom controls on phones, and expanded reading hides the icon rail; close the card to restore them and center its landmark. Short landscape screens use a taller floating card on the right instead.
 
-The system’s reduced-motion setting is respected live: camera flights settle immediately, inertia and marker pulses stop, and UI motion becomes stationary. Fine-pointer hover lifts are disabled for touch. Explicit close/Escape actions restore focus to the initiating control; clicking outside popovers leaves focus where you clicked.
+The system’s reduced-motion setting is respected live: camera flights settle immediately, inertia stops, and UI motion becomes stationary. Fine-pointer hover lifts are disabled for touch. Explicit close/Escape actions restore focus to the initiating control; clicking outside popovers leaves focus where you clicked.
 
 ## Story landmarks and reader cards
 
@@ -35,19 +35,18 @@ A known story location can appear as a pin within grey terrain in **Faint silhou
 
 To open Gyou directly in the local preview, use [chapter 845 at Gyou](http://127.0.0.1:3000/?chapter=845&site=gyou). The `site` parameter opens only a landmark discovered at the requested chapter; future-site links do not expose its reader card.
 
-## Floating state hand and landmark filters
+## Focused map controls
 
-The **Seven States** dock rests at bottom center as a slim fanned stack with a brass handle. Hover with a mouse, focus with the keyboard, or tap the handle to fan out Qin, Zhao, Wei, Han, Chu, Yan, and Qi. Hovered cards lift. Selecting a card filters landmarks to that state and flies the camera to its territory; its brass border and raised position mark the selection. Select it again or use the reset chip to clear. A state unlocks when any part of its territory is discovered at the reader’s chapter; undiscovered cards are dimmed, disabled, and labeled with that chapter. Only interactive cards and controls receive pointer events, so empty dock space leaves map panning available. Motion uses CSS and respects reduced-motion preferences.
+The chapter button floats at the top center, with one **Story arc** picker directly below it. Choose a revealed arc to focus its landmark, or **All story arcs** to restore the available map. The picker includes only started stories at discovered locations. Lowering the reader chapter clears an arc that is no longer available. The Seven States dock, state filter, filter menu, and Layers control have been removed; relief and place labels remain enabled.
 
-Open **Landmark filters** to choose a state, an arc, or both. State categories match the story dataset exactly: **Multi-state** contains its own shared-border campaigns and is separate from the Qin and Zhao choices. Arc options contain only stories started by your current chapter whose locations are revealed, and narrow to the selected state. The visible-landmark count follows the filters, chapter gates, and unexplored-area mode. **Clear filters** restores all available landmarks.
+Filtering to one arc at a shared location shows only that arc in its reader card. For example, **Conquest of Han** keeps the Shintei miniature and excludes its earlier **Nature of Humanity** story from the filtered card. The URL stores the selection as `arc=arcID`; legacy `filter` parameters are cleared. State selection on the map still focuses a territory without filtering landmarks.
 
-Filtering to one arc at a shared location shows only that arc in its reader card. For example, selecting **Conquest of Han** leaves the Shintei miniature visible and keeps its earlier **Nature of Humanity** story out of the filtered card. Lowering your chapter clears an active arc filter if you have no longer reached it.
-
-Filters are stored in the URL using `filter=stateID` and `arc=arcID`, so the view can be shared or reopened locally. For example, [Zhao’s Western Zhao Invasion at chapter 845](http://127.0.0.1:3000/?chapter=845&filter=zhao&arc=western-zhao) selects the Gyou campaign. Invalid, future, and state-incompatible arc parameters reset to all available arcs. Filters are not stored in local storage.
+The brand is an unboxed wordmark on desktop and a small seal on phones. Cast, map help, and legend use vertically stacked icon buttons with accessible labels and hover titles. The legend is closed by default and light-dismisses on outside click or Escape. There is no persistent heading, legend, scale note, or first-use panel over the terrain.
 
 ## Volume bookshelf and local media
 
-A bottom-left chip shows the current volume’s cover and **Vol N**, using the supplied manifest’s chapter ranges: chapter **845** belongs to **volume 77**. Tap it to raise a horizontally scrollable filmstrip of all 80 covers, clear of the state hand. The current volume has a brass border; volumes whose first chapter is beyond the reader’s position are greyed and locked. Selecting an available cover jumps to its first chapter and flies the camera toward its main arc region. The supplied range ends at chapter 878; later positions retain volume 80’s cover.
+A bottom-left **comic-book stack** shows the current volume and up to four preceding volumes. The manifest places chapter **845** in **volume 77**, so its shelf contains only **volumes 73–77**. Tap the stack to fan out those five covers; the current volume has a brass outline, and a hovered cover lifts. Choosing a cover closes the shelf, jumps to its first chapter, and flies toward its main arc. Outside click or Escape dismisses the shelf. Beginning readers see only the volumes they have reached, and later reading positions retain the last supplied cover (volume 80).
+
 
 Media stays local. `assets/manifest.json` and `assets/source/` preserve the supplied 80 covers and 30 character originals (about 40 MB). `npm run prepare:assets` uses Sharp to generate 140 WebP images totaling about 3.22 MB in `public/assets/`, plus a generated manifest. Covers are at most 200×300, thumbnails 96×120, and portraits 420×560, preserving aspect ratio. `npm run build` runs this preparation automatically through `prebuild`; the browser serves only the smaller images. `lib/media-data.ts` supplies chapter-to-volume lookup, main-arc selection, and character metadata. See `assets/README.md` for source and metadata notes.
 
@@ -57,7 +56,7 @@ Volume travel only chooses arcs already started at the volume’s first chapter.
 
 Open **Your chapter** to enter the last chapter you have read and choose **Apply chapter**. The default is chapter **845**. Your chapter and unexplored-area preference are saved in this browser; the `?chapter=100` URL parameter overrides the saved chapter for that visit. Chapter changes update the URL so a local view can be reopened at the same point.
 
-Discovered terrain retains its color. Under **Unexplored areas**, choose **Faint silhouettes** for grey terrain and unnamed shapes beyond your chapter, or **Fully hidden** to hide unreached terrain, names, and markers. Capital models follow terrain discovery, while story pins also obey their reading gates and active filters. The **Your chapter** marker follows your frontier, while the pulsing **Latest release** marker shows the configured latest point when its area is visible.
+Discovered terrain retains its color. Under **Unexplored areas**, choose **Faint silhouettes** for grey terrain and unnamed shapes beyond your chapter, or **Fully hidden** to hide unreached terrain, names, and markers. Capital models follow terrain discovery, while story pins also obey their reading gates and active filters. The **Your chapter** marker follows your frontier, while the muted **Latest release** marker shows the configured latest point when its area is visible.
 
 The unexplored-area preference is stored under `kingdom-silhouettes`. A URL parameter overrides that saved mode: `spoilers=silhouettes` shows faint shapes, while `spoilers=hidden` fully hides unexplored areas. Chapter progress is stored under `kingdom-reader-chapter`.
 
@@ -88,4 +87,4 @@ The app exports a static site to `out/`. `lib/atlas-data.ts` holds seven hand-au
 
 ## Phase boundary
 
-This local deliverable completes Phases 1–5: the map, chapter-driven fog, reader cards, state and arc filters, the floating state hand, volume browsing, character portraits/Cast, and the Phase 5 camera, loading, responsive-reader, focus, and reduced-motion polish. No publishing or external upload is required to use the local preview.
+This local deliverable completes Phases 1–5: the map, chapter-driven fog, reader cards, arc filtering, recent-volume browsing, character portraits/Cast, and the Phase 5 camera, loading, responsive-reader, focus, and reduced-motion polish. No publishing or external upload is required to use the local preview.

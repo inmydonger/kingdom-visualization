@@ -27,6 +27,12 @@ export function getCurrentVolume(value: number): AtlasVolume {
     ?? VOLUMES[VOLUMES.length - 1];
 }
 
+/** A small shelf ending at the reader's current volume, never ahead of it. */
+export function getRecentVolumes(chapter: number): AtlasVolume[] {
+  const currentIndex = VOLUMES.indexOf(getCurrentVolume(chapter));
+  return VOLUMES.slice(Math.max(0, currentIndex - 4), currentIndex + 1);
+}
+
 /** Prefer the largest overlap among arcs reached at the volume's first chapter. */
 export function getVolumeArc(volumeOrNumber: AtlasVolume | number): StoryArc | undefined {
   const volume = typeof volumeOrNumber === "number" ? VOLUMES.find(item => item.volume === volumeOrNumber) : volumeOrNumber;

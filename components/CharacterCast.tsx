@@ -35,7 +35,7 @@ export default function CharacterCast({ chapter, onLocate }: CharacterCastProps)
 
   return (
     <>
-      <button ref={trigger} type="button" className={styles.trigger} popoverTarget={`${id}-cast`} aria-expanded={open} aria-controls={`${id}-cast`} aria-label="Character cast"><Users size={16} strokeWidth={1.5} aria-hidden="true" /><span>Cast</span></button>
+      <button ref={trigger} type="button" className={styles.trigger} popoverTarget={`${id}-cast`} aria-expanded={open} aria-controls={`${id}-cast`} aria-label="Character cast" title="Character cast"><Users size={16} strokeWidth={1.5} aria-hidden="true" /></button>
       <div ref={panel} id={`${id}-cast`} className={styles.panel} popover="auto" aria-labelledby={`${id}-title`} onToggle={(event) => setOpen(event.newState === 'open')} onKeyDown={(event) => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeCast(); } }}>
         <div className={styles.heading}><div><p>People of Kingdom</p><h2 id={`${id}-title`}>The cast</h2></div><button type="button" className={styles.close} aria-label="Close character cast" onClick={closeCast}><X size={17} strokeWidth={1.5} aria-hidden="true" /></button></div>
         <p className={styles.note}>Choose a character to visit their debut region.</p>

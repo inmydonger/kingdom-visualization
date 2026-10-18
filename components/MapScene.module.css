@@ -32,11 +32,7 @@
 .vignette { pointer-events: none; position: absolute; inset: 0; box-shadow: inset 0 0 160px 10px #0a16194d; }
 .chapterMarker { width: 14px; height: 14px; z-index: 2; color: #e3c891; }
 .chapterMarker > i { position: absolute; inset: 3px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px #e3c89133,0 2px 8px #0008; }
-.chapterMarker > span { position: absolute; display: flex; align-items: center; gap: 8px; padding: 7px 9px; background: #10191eea; border: 1px solid #b8a17488; border-radius: 3px; color: #dddccc; font-size: 11px; white-space: nowrap; line-height: 1; }
-.chapterMarker strong { color: #e3c891; font-weight: 600; font-variant-numeric: tabular-nums; }
-.readerMarker > span { right: 20px; bottom: 47px; }
-.latestMarker > span { left: 20px; bottom: 17px; }
-.latestMarker::before { content: ''; position: absolute; inset: -3px; border: 1px solid currentColor; border-radius: 50%; animation: frontier-pulse 2.6s ease-out infinite; }
-@keyframes frontier-pulse { from { transform: scale(.7); opacity: .9; } to { transform: scale(2.2); opacity: 0; } }
-@media (prefers-reduced-motion:reduce) { .latestMarker::before { animation:none; opacity:.55; } .story { transition:none; } }
+.latestMarker { color:#a6b5b0; }
+.latestMarker > i { box-shadow:0 0 0 3px #a6b5b033,0 2px 8px #0008; }
+@media (prefers-reduced-motion:reduce) { .story { transition:none; } }
 @media (max-width: 700px) { .state { font-size: 17px; letter-spacing: .08em; } .state small { display: none; } .capital { font-size: 9px; padding: 3px 4px; min-height: 25px; } .capital::before { margin-right: 3px; font-size: 6px; } .state[data-state='han'], .state[data-state='wei'] { font-size: 12px; } .natural, .sea, .pass { display: none; } .vignette { box-shadow: inset 0 0 60px #0a16194d; } }
