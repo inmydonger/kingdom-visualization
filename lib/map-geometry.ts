@@ -1,8 +1,9 @@
 import * as THREE from "three";
-import { STATES, RIVERS, type Point, type StateId } from "./atlas-data";
+import { STATES, RIVERS, pointInPolygon, type Point, type StateId } from "./atlas-data";
 import { elevation as fieldElevation, terrainNormal, terrainTint } from "./terrain-height";
 import { createTerrainTextures, applyTerrainBiome } from "./terrain-textures";
 import { createFogController } from "./fog-material";
+import { realmOutline, offsetOutline } from './border-paths';
 
 // All states use the same sampling grid and analytic normals. Borders therefore
 // cross continuous landforms instead of becoming separate extruded slabs.
@@ -140,30 +141,19 @@ export function buildMap() {
   const hiddenPlane=new THREE.Mesh(new THREE.PlaneGeometry(400,300),new THREE.MeshBasicMaterial({color:'#172126'}));
   hiddenPlane.rotation.x=-Math.PI/2;hiddenPlane.position.y=SEA_LEVEL+0.01;hiddenPlane.visible=false;group.add(hiddenPlane);
 
-  const coastline: Point[] = [[108,-5],[100,4],[97,14],[91,21],[84,24],[82,27],[88,29],[94,32],[91,37],[85,40],[85,46],[88,54],[89,63],[91,74],[98,87]];
-  const coastalCurve = new THREE.CatmullRomCurve3(coastline.map(([x,y]) => new THREE.Vector3(x,0,y)), false, "centripetal");
-  const coast = coastalCurve.getPoints(260);
-  const distantLand = new THREE.Shape([[-220,-180],[260,-180],[190,-70],...coast.map(p=>[p.x,p.z]),[180,200],[-220,200]].map(([x,y])=>new THREE.Vector2(x-50,36-y)));
-  const distantGeometry = new THREE.ShapeGeometry(distantLand);
-  distantGeometry.rotateX(-Math.PI/2);
-  const distantPositions = distantGeometry.getAttribute("position");
-  const distantColors:number[]=[], distantUvs:number[]=[];
-  const distantColor = new THREE.Color("#7b8765");
-  for(let i=0;i<distantPositions.count;i++) {
-    distantColors.push(distantColor.r,distantColor.g,distantColor.b);
-    distantUvs.push(distantPositions.getX(i)/8,distantPositions.getZ(i)/8);
-  }
-  distantGeometry.setAttribute("color",new THREE.Float32BufferAttribute(distantColors,3));
-  distantGeometry.setAttribute("uv",new THREE.Float32BufferAttribute(distantUvs,2));
-  distantGeometry.setAttribute("aRockBlend",new THREE.Float32BufferAttribute(new Float32Array(distantPositions.count),1));
-  const distant = new THREE.Mesh(distantGeometry,surfaceMaterial());
-  distant.name='context-base';
-  distant.position.y=.39; distant.receiveShadow=true; terrain.add(distant);
-  const mainland: Point[] = [[-22,-17],[111,-17], ...coast.map(p => [p.x,p.z] as Point),[-22,87]];
+  // The atlas tile ends at the realm instead of extending into an empty grass plane.
+  const mainland = offsetOutline(realmOutline(STATES), .45);
+  const coast: THREE.Vector3[] = [];
+  mainland.forEach((a,i)=>{
+    const b=mainland[(i+1)%mainland.length], steps=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])*4));
+    for(let j=0;j<steps;j++)coast.push(new THREE.Vector3(a[0]+(b[0]-a[0])*j/steps,0,a[1]+(b[1]-a[1])*j/steps));
+  });
+  coast.push(coast[0].clone());
   const land = new THREE.Mesh(terrainGeometry(mainland, "#7b8765", sample, -0.17), surfaceMaterial());
+  land.name='realm-base';
   land.receiveShadow = true; terrain.add(land);
 
-  // A continuous rock skirt follows the coast; political boundaries have no walls.
+  // A continuous rock skirt closes the atlas tile; internal borders have no walls.
   const cliffPositions: number[] = [], cliffColors: number[] = [], cliffUvs: number[] = [];
   const stone = new THREE.Color();
   for (let i = 1; i < coast.length; i++) {
@@ -182,9 +172,9 @@ export function buildMap() {
   cliffGeometry.setAttribute("aRockBlend",new THREE.Float32BufferAttribute(new Float32Array(cliffPositions.length/3).fill(1),1));
   const cliffs = new THREE.Mesh(cliffGeometry,surfaceMaterial()); cliffs.castShadow = true; cliffs.receiveShadow = true; terrain.add(cliffs);
 
-  for (const distance of [0.35,1.1,2.2,3.7,5.6]) {
+  for (const distance of [0.35,1.1,2.2]) {
     const points = coast.map((p,i) => {
-      const a=coast[Math.max(0,i-1)], b=coast[Math.min(coast.length-1,i+1)];
+      const a=coast[(i+coast.length-2)%(coast.length-1)], b=coast[(i+1)%(coast.length-1)];
       const dx=b.x-a.x, dz=b.z-a.z, length=Math.hypot(dx,dz)||1;
       return new THREE.Vector3(p.x-50 + dz/length*distance,-1.11,p.z-36-dx/length*distance);
     });
@@ -214,8 +204,10 @@ export function buildMap() {
   for(const river of RIVERS) {
     const curve=new THREE.CatmullRomCurve3(river.points.map(p=>worldPoint(p)),false,"centripetal");
     const points=curve.getPoints(420).map(p=>{p.y=elevation(p.x,p.z)+0.045;return p;});
-    const banks=new THREE.Mesh(ribbon(points,0.19,0.035),new THREE.MeshStandardMaterial({color:"#9b9e79",roughness:1,side:THREE.DoubleSide}));
-    const water=new THREE.Mesh(ribbon(points,0.1,0.065),new THREE.MeshStandardMaterial({color:"#619b9b",roughness:0.4,metalness:0.1,side:THREE.DoubleSide}));
+    // End river ribbons at the tile edge, including their banks.
+    const inside=points.filter(p=>pointInPolygon([p.x+50,p.z+36],mainland));
+    const banks=new THREE.Mesh(ribbon(inside,0.19,0.035),new THREE.MeshStandardMaterial({color:"#9b9e79",roughness:1,side:THREE.DoubleSide}));
+    const water=new THREE.Mesh(ribbon(inside,0.1,0.065),new THREE.MeshStandardMaterial({color:"#619b9b",roughness:0.4,metalness:0.1,side:THREE.DoubleSide}));
     terrain.add(banks,water);
   }
   terrain.traverse(object=>{

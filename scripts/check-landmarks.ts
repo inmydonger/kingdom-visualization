@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import * as THREE from "three";
 import { STORY_SITES, type LandmarkKind } from "../lib/story-data";
 import { createStoryMiniature } from "../lib/story-miniatures";
+import { LANDMARK_SCALE, muteLandmark } from '../lib/landmark-presentation';
 
 type Tier = "major" | "standard";
 const kinds = [...new Set(STORY_SITES.map(site => site.kind))];
@@ -37,6 +38,17 @@ for (const { kind, tier } of variants) {
     assert(size.toArray().every(value => Number.isFinite(value) && value > 0), `${label} has finite, nonzero bounds`);
     assert(Math.max(size.x, size.z) <= (tier === "major" ? 6.5 : 4), `${label} fits its map footprint`);
     assert(size.y <= 4, `${label} stays below the atlas height limit`);
+    const materials=new Set<THREE.MeshStandardMaterial>();
+    model.traverse(object=>{if(object instanceof THREE.Mesh&&object.material instanceof THREE.MeshStandardMaterial)materials.add(object.material);});
+    const originalColors=[...materials].map(material=>material.color.clone());
+    muteLandmark(model,true);
+    assert([...materials].some((material,i)=>!material.color.equals(originalColors[i])),`${label} can be greyed without hiding it`);
+    muteLandmark(model,false);
+    assert([...materials].every((material,i)=>material.color.equals(originalColors[i])),`${label} restores its original colors`);
+    model.scale.multiplyScalar(LANDMARK_SCALE);
+    const enlarged=new THREE.Box3().setFromObject(model);
+    assert(Math.abs(enlarged.min.y)<1e-5,`${label} stays grounded when enlarged`);
+    assert(enlarged.getSize(new THREE.Vector3()).x>size.x*1.6,`${label} is visibly larger on the map`);
     sizes.set(label, size);
     mostDrawCalls = Math.max(mostDrawCalls, drawCalls);
   } finally {

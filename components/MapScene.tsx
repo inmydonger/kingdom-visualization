@@ -14,7 +14,8 @@ import { createFogSilhouette } from "@/lib/fog-silhouettes";
 import { createFrontierGeometry } from "@/lib/discovery-frontier";
 import { STORY_SITES, isSiteDiscovered } from '@/lib/story-data';
 import { createStoryMiniature } from '@/lib/story-miniatures';
-import { getVisibleSites, matchesSiteFilters, normalizeFilters, type LandmarkFilters } from '@/lib/landmark-filters';
+import { getMapSites, matchesSiteFilters, normalizeFilters, type LandmarkFilters } from '@/lib/landmark-filters';
+import { LANDMARK_SCALE, muteLandmark } from '@/lib/landmark-presentation';
 import { cameraFlightDuration, cameraFlightProgress, clampCameraTarget } from '@/lib/camera-motion';
 import { getCampaignRoutes } from '@/lib/campaign-data';
 import { createCampaignOverlay, disposeCampaignOverlay } from '@/lib/campaign-geometry';
@@ -43,7 +44,7 @@ export default function MapScene(props: Props) {
   callbacks.current = props;
   const readerPoint=useMemo(()=>getReaderFrontierPoint(props.readerChapter),[props.readerChapter]);
   const campaignRoutes=getCampaignRoutes(props.campaignArcId,props.readerChapter);
-  const visibleSites=getVisibleSites(props.readerChapter,props.filters,props.showSilhouettes);
+  const visibleSites=getMapSites(props.readerChapter,props.showSilhouettes);
   const api = useRef<{ command: (c: Command) => void; select: (id: StateId | null) => void; campaign:(arcId:string)=>void; progress:(chapter:number,silhouettes:boolean,filters:LandmarkFilters)=>void; hover:(id:string|null,tooltip?:boolean)=>void } | null>(null);
 
   useEffect(() => {
@@ -84,7 +85,7 @@ export default function MapScene(props: Props) {
     controls.screenSpacePanning = false;
     controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
     controls.touches = { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_PAN };
-    controls.minZoom = 0.75; controls.maxZoom = 4.5 * MAP_WORLD_SCALE;
+    controls.minZoom = 1; controls.maxZoom = 4.5 * MAP_WORLD_SCALE;
     controls.zoomSpeed = 0.8;
     controls.target.set(0, 0, 0); controls.update();
     const map = buildMap(); map.group.scale.set(MAP_WORLD_SCALE,1,MAP_WORLD_SCALE); scene.add(map.group);
@@ -96,9 +97,10 @@ export default function MapScene(props: Props) {
     const storyObjects=STORY_SITES.map(site=>{
       const color=STATES.find(state=>state.id===site.stateId)?.color??'#b8a174';
       const object=createStoryMiniature(site.kind,site.tier,color);
+      object.scale.multiplyScalar(LANDMARK_SCALE);
       object.position.copy(mapWorldPoint(site.position,0.08));object.userData.siteId=site.id;scene.add(object);
       const kind=site.kind==='banner'||site.kind==='battlefield'?'banner':site.kind==='mountain'||site.kind==='hills'?'mountain':site.kind==='pass'?'gate':'fortress';
-      const ghost=createFogSilhouette(kind);ghost.position.copy(object.position);if(site.tier==='major')ghost.scale.setScalar(1.4);scene.add(ghost);
+      const ghost=createFogSilhouette(kind);ghost.position.copy(object.position);ghost.scale.setScalar(LANDMARK_SCALE*(site.tier==='major'?1.4:1));scene.add(ghost);
       return {object,ghost,site};
     });
     const selectedRing=new THREE.Mesh(new THREE.RingGeometry(1.85,1.95,64),new THREE.MeshBasicMaterial({color:'#e5ca8f',transparent:true,opacity:0.8,depthTest:false,side:THREE.DoubleSide}));
@@ -108,7 +110,7 @@ export default function MapScene(props: Props) {
     const landmarks: { object: THREE.Object3D; point: Point; stateId:StateId }[] = [];
     for (const state of STATES) {
       const capital = createCapital(state.color);
-      capital.scale.setScalar(1.9);
+      capital.scale.setScalar(1.9*LANDMARK_SCALE);
       capital.position.copy(mapWorldPoint(state.capital.position, 0.05));
       capital.traverse(o => { if (o instanceof THREE.Mesh) { o.castShadow = true; o.receiveShadow = true; } });
       landmarks.push({object:capital,point:state.capital.position,stateId:state.id});
@@ -141,7 +143,7 @@ export default function MapScene(props: Props) {
       if(hoveredSiteId===nextId&&showHoverTooltip===tooltip)return;
       hoveredSiteId=nextId;showHoverTooltip=tooltip;
       hoverRing.visible=Boolean(hovered);
-      if(hovered){hoverRing.position.copy(hovered.object.position);hoverRing.position.y+=0.15;hoverRing.scale.setScalar(hovered.site.tier==='major'?1.65:1);}
+      if(hovered){hoverRing.position.copy(hovered.object.position);hoverRing.position.y+=0.15;hoverRing.scale.setScalar(LANDMARK_SCALE*(hovered.site.tier==='major'?1.65:1));}
       canvas.style.cursor=hovered&&tooltip?'pointer':'';
       invalidate();
     }
@@ -156,13 +158,15 @@ export default function MapScene(props: Props) {
         const known=isDiscovered([x,z],readerChapter);
         if(!showSilhouettes&&!known&&!node.dataset.readerMarker){node.style.display='none';continue;}
         if(!showSilhouettes&&node.dataset.sea){node.style.display='none';continue;}
-        if(node.dataset.capitalState&&(activeFilters.arc!=='all'||(activeFilters.state!=='all'&&activeFilters.state!==node.dataset.capitalState))){node.style.display='none';continue;}
+        if(node.dataset.capitalState)node.classList.toggle(styles.mutedStory,activeFilters.arc!=='all'||(activeFilters.state!=='all'&&activeFilters.state!==node.dataset.capitalState));
         if(node.dataset.pass&&(activeFilters.arc!=='all'||activeFilters.state!=='all')){node.style.display='none';continue;}
         if(node.dataset.capital&&!known){node.style.display='none';continue;}
         node.style.display='';
         node.style.opacity=node.dataset.state&&!known?'0.28':'1';
         if(node.dataset.storyId){
           const selected=node.dataset.storyId===callbacks.current.selectedSiteId;
+          const site=STORY_SITES.find(site=>site.id===node.dataset.storyId)!;
+          node.classList.toggle(styles.mutedStory,!selected&&!matchesSiteFilters(site,activeFilters,readerChapter));
           node.classList.toggle(styles.compactStory,(camera.zoom<2*MAP_WORLD_SCALE||w<600)&&!selected);
           node.classList.toggle(styles.selectedStory,selected);
           node.classList.toggle(styles.hoveredStory,node.dataset.storyId===hoveredSiteId);
@@ -238,14 +242,14 @@ export default function MapScene(props: Props) {
         }
       }
       if(c.type==="region"&&c.point){const point=mapWorldPoint(c.point);point.y=0;move(point,2.1*MAP_WORLD_SCALE);}
-      if (c.type === "reset") move(new THREE.Vector3(0, 0, 0), homeZoom);
+      if (c.type === "reset") move(homeTarget, homeZoom);
       if (c.type === "zoom-in" || c.type === "zoom-out") move(controls.target.clone(), THREE.MathUtils.clamp(camera.zoom * (c.type === "zoom-in" ? 1.3 : 1 / 1.3), controls.minZoom, controls.maxZoom));
       if (c.type === "focus" && c.stateId) {
         const state = STATES.find(s => s.id === c.stateId)!;
         const p = mapWorldPoint(state.label); p.y = 0;
         move(p, state.id === "han" ? 2.4 : state.id === "wei" ? 2.1 : 1.6);
       }
-      if(c.type==='site'&&c.siteId&&getVisibleSites(readerChapter,activeFilters,showSilhouettes).some(site=>site.id===c.siteId)){
+      if(c.type==='site'&&c.siteId&&getMapSites(readerChapter,showSilhouettes).some(site=>site.id===c.siteId)){
         const site=STORY_SITES.find(candidate=>candidate.id===c.siteId)!;
         const p=mapWorldPoint(site.position);p.y=0;
         const zoom=(site.tier==='major'?2.5:2.8)*MAP_WORLD_SCALE,w=container.clientWidth,h=container.clientHeight;
@@ -275,7 +279,9 @@ export default function MapScene(props: Props) {
       }
       const selected=storyObjects.find(item=>item.site.id===callbacks.current.selectedSiteId&&item.object.visible);
       selectedRing.visible=Boolean(selected);
-      if(selected){selectedRing.position.copy(selected.object.position);selectedRing.position.y+=0.12;selectedRing.scale.setScalar(selected.site.tier==='major'?1.65:1);}
+      if(selected){selectedRing.position.copy(selected.object.position);selectedRing.position.y+=0.12;selectedRing.scale.setScalar(LANDMARK_SCALE*(selected.site.tier==='major'?1.65:1));}
+      for(const {object,site} of storyObjects)muteLandmark(object,site.id!==callbacks.current.selectedSiteId&&!matchesSiteFilters(site,activeFilters,readerChapter));
+      for(const {object,stateId} of landmarks)muteLandmark(object,activeFilters.arc!=='all'||(activeFilters.state!=='all'&&activeFilters.state!==stateId));
       invalidate();
     }
     map.setRelief(true);
@@ -290,10 +296,10 @@ export default function MapScene(props: Props) {
       readerChapter=chapter;showSilhouettes=silhouettes;activeFilters=normalizeFilters(filters,chapter);map.setChapter(chapter);map.setHidden(!silhouettes);
       if(frontierChapter!==chapter){frontier.geometry.dispose();frontier.geometry=createFrontierGeometry(chapter);frontierChapter=chapter;}
       campaign(callbacks.current.campaignArcId);
-      const visibleSites=getVisibleSites(chapter,activeFilters,silhouettes);
+      const visibleSites=getMapSites(chapter,silhouettes);
       const visibleIds=new Set(visibleSites.map(site=>site.id));
-      for(const {object,point,stateId} of landmarks)object.visible=isDiscovered(point,chapter)&&activeFilters.arc==='all'&&(activeFilters.state==='all'||activeFilters.state===stateId)&&!visibleSites.some(site=>Math.hypot(site.position[0]-point[0],site.position[1]-point[1])<3);
-      for(const {object,ghost,site} of storyObjects){object.visible=visibleIds.has(site.id);ghost.visible=silhouettes&&!isSiteDiscovered(site.id,chapter)&&matchesSiteFilters(site,activeFilters,chapter);}
+      for(const {object,point} of landmarks)object.visible=isDiscovered(point,chapter)&&!visibleSites.some(site=>Math.hypot(site.position[0]-point[0],site.position[1]-point[1])<3);
+      for(const {object,ghost,site} of storyObjects){object.visible=visibleIds.has(site.id);ghost.visible=silhouettes&&!isSiteDiscovered(site.id,chapter);}
       if(hoveredSiteId&&!visibleIds.has(hoveredSiteId))hover(null);
       const matrix=new THREE.Matrix4(),position=new THREE.Vector3(),zero=new THREE.Vector3(0,0,0);
       for(const {mesh,original} of forestBatches){
@@ -316,8 +322,12 @@ export default function MapScene(props: Props) {
     const mapExtent = STATES.flatMap(state => state.territory.map(p => mapWorldPoint(p, 2)));
     const isoRight = new THREE.Vector3(1,0,-1).normalize();
     const isoUp = new THREE.Vector3(-1,2,-1).normalize();
-    const fitWidth = Math.max(...mapExtent.map(p => Math.abs(p.dot(isoRight)))) * 2 + 12 * MAP_WORLD_SCALE;
-    const fitHeight = Math.max(...mapExtent.map(p => Math.abs(p.dot(isoUp)))) * 2 + 18 * MAP_WORLD_SCALE;
+    const rightExtent=mapExtent.map(p=>p.dot(isoRight)),upExtent=mapExtent.map(p=>p.dot(isoUp));
+    const midRight=(Math.min(...rightExtent)+Math.max(...rightExtent))/2,midUp=(Math.min(...upExtent)+Math.max(...upExtent))/2;
+    const homeTarget=new THREE.Vector3((Math.SQRT2*midRight-Math.sqrt(6)*midUp)/2,0,(-Math.SQRT2*midRight-Math.sqrt(6)*midUp)/2);
+    camera.position.add(homeTarget.clone().sub(controls.target));controls.target.copy(homeTarget);controls.update();
+    const fitWidth = Math.max(...rightExtent)-Math.min(...rightExtent) + 6 * MAP_WORLD_SCALE;
+    const fitHeight = Math.max(...upExtent)-Math.min(...upExtent) + 8 * MAP_WORLD_SCALE;
     let viewportWidth=0,viewportHeight=0;
     function resize() {
       const w = container.clientWidth, h = container.clientHeight;
@@ -475,7 +485,7 @@ export default function MapScene(props: Props) {
       <span className={`${styles.label} ${styles.sea}`} data-sea="true" data-point="97,49,0">Yellow Sea</span>
     </div>
     <div className={styles.labels}>
-      {visibleSites.map(site=><button key={site.id} type="button" className={`${styles.label} ${styles.story}`} data-story-id={site.id} data-major={site.tier==='major'} data-point={`${site.position},${site.tier==='major'?4.6:3.2}`} aria-label={`Open ${site.name} landmark`} aria-pressed={props.selectedSiteId===site.id} onPointerEnter={event=>{if(event.pointerType==='mouse')api.current?.hover(site.id);}} onPointerLeave={()=>api.current?.hover(null)} onFocus={()=>api.current?.hover(site.id)} onBlur={()=>api.current?.hover(null)} onClick={()=>props.onSelectSite(site.id)}><Castle size={13} strokeWidth={1.6} aria-hidden="true"/><b>{site.name}</b></button>)}
+      {visibleSites.map(site=><button key={site.id} type="button" className={`${styles.label} ${styles.story}`} data-story-id={site.id} data-major={site.tier==='major'} data-muted={!matchesSiteFilters(site,props.filters,props.readerChapter)&&props.selectedSiteId!==site.id} data-point={`${site.position},${(site.tier==='major'?4.6:3.2)*LANDMARK_SCALE}`} aria-label={`Open ${site.name} landmark`} aria-pressed={props.selectedSiteId===site.id} onPointerEnter={event=>{if(event.pointerType==='mouse')api.current?.hover(site.id);}} onPointerLeave={()=>api.current?.hover(null)} onFocus={()=>api.current?.hover(site.id)} onBlur={()=>api.current?.hover(null)} onClick={()=>props.onSelectSite(site.id)}><Castle size={15} strokeWidth={1.6} aria-hidden="true"/><b>{site.name}</b></button>)}
     </div>
     <div className={styles.labels}>
       <div className={`${styles.label} ${styles.chapterMarker} ${styles.readerMarker}`} data-reader-marker="true" data-point={`${readerPoint},2.8`} aria-label={`Explored through chapter ${props.readerChapter}, discovery frontier`}><i/></div>

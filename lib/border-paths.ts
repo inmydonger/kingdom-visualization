@@ -4,6 +4,46 @@ type Territory = { id: string; territory: Point[] };
 const pointKey = (p: Point) => `${p[0]},${p[1]}`;
 const edgeKey = (a: Point, b: Point) => [pointKey(a), pointKey(b)].sort().join('|');
 
+/** Trace only exterior edges; shared political frontiers never become tile edges. */
+export function realmOutline(states: readonly Territory[]): Point[] {
+  const key = (p: Point) => `${p[0].toFixed(7)},${p[1].toFixed(7)}`;
+  const edges = new Map<string, { a: Point; b: Point; count: number }>();
+  for (const state of states) state.territory.forEach((a, i) => {
+    const b = state.territory[(i + 1) % state.territory.length];
+    const id = [key(a), key(b)].sort().join('|');
+    const previous = edges.get(id);
+    if (previous) previous.count++;
+    else edges.set(id, { a, b, count: 1 });
+  });
+  const exterior = [...edges.values()].filter(edge => edge.count === 1);
+  const neighbors = new Map<string, Point[]>();
+  for (const { a, b } of exterior) {
+    neighbors.set(key(a), [...(neighbors.get(key(a)) ?? []), b]);
+    neighbors.set(key(b), [...(neighbors.get(key(b)) ?? []), a]);
+  }
+  if (!exterior.length || [...neighbors.values()].some(points => points.length !== 2)) throw new Error('The realm must have a closed exterior');
+  const outline: Point[] = [exterior[0].a];
+  let previous = exterior[0].a, current = exterior[0].b;
+  while (key(current) !== key(outline[0])) {
+    outline.push(current);
+    const next = neighbors.get(key(current))!.find(point => key(point) !== key(previous))!;
+    previous = current; current = next;
+    if (outline.length > exterior.length) throw new Error('The realm outline did not close');
+  }
+  if (outline.length !== exterior.length) throw new Error('The realm has disconnected exterior edges');
+  return outline;
+}
+
+/** A narrow stone lip supports the border strokes without adding empty hinterland. */
+export function offsetOutline(points: readonly Point[], distance: number): Point[] {
+  const area = points.reduce((sum, p, i) => { const q=points[(i+1)%points.length]; return sum+p[0]*q[1]-q[0]*p[1]; }, 0);
+  return points.map((p, i) => {
+    const a=points[(i+points.length-1)%points.length], b=points[(i+1)%points.length];
+    const dx=b[0]-a[0], dy=b[1]-a[1], length=Math.hypot(dx,dy)||1, sign=area>0?1:-1;
+    return [p[0]+dy/length*distance*sign,p[1]-dx/length*distance*sign];
+  });
+}
+
 /** Smooth each shared frontier once, so adjacent regions cannot open cracks. */
 export function smoothTerritories(states: Territory[], anchors: readonly Point[] = []): Map<string, Point[]> {
   const polygons = states.map(state => ({ ...state, territory: state.territory.flatMap((a, i) => {

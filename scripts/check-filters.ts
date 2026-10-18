@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { DEFAULT_FILTERS, getFilterArcs, getVisibleSites, matchesSiteFilters, normalizeFilters, type LandmarkFilters } from "../lib/landmark-filters";
+import { DEFAULT_FILTERS, getFilterArcs, getVisibleSites, getMapSites, matchesSiteFilters, normalizeFilters, type LandmarkFilters } from "../lib/landmark-filters";
 import { ARCS, STORY_SITES } from "../lib/story-data";
 import { isStateDiscovered } from "../lib/state-discovery";
 
@@ -44,6 +44,12 @@ assert.deepEqual(getVisibleSites(100, { state: "all", arc: "assassination-plot" 
 assert.deepEqual(getVisibleSites(845, { state: "han", arc: "nature-of-humanity" }, true).map(site => site.id), ["shintei"]);
 assert.deepEqual(getVisibleSites(845, { state: "han", arc: "conquest-of-han" }, true).map(site => site.id), ["shintei"]);
 assert(!matchesSiteFilters(STORY_SITES.find(site => site.id === "gyou")!, { state: "all", arc: "coalition-invasion" }, 845));
+const mapSites=getMapSites(845,true);
+assert(mapSites.some(site=>site.id==='gyou'),'A nonmatching landmark remains on the map during Coalition Invasion');
+assert(mapSites.some(site=>site.id==='hangu-pass'),'The selected arc landmark remains on the map');
+assert(!mapSites.some(site=>site.id==='zhao-endgame'),'Dimmed context must not reveal future landmarks');
+assert(getMapSites(100,true).some(site=>site.id==='kantan-streets'),'Known flashback landmarks remain available');
+assert(!getMapSites(100,false).some(site=>site.id==='kantan-streets'),'Fully hidden fog still hides landmarks in unrevealed terrain');
 
 const earlyWithFog = getVisibleSites(100, DEFAULT_FILTERS, true).map(site => site.id);
 const earlyWithoutFog = getVisibleSites(100, DEFAULT_FILTERS, false).map(site => site.id);

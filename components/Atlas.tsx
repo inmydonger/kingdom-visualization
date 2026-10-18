@@ -16,7 +16,7 @@ import { getArcDestination } from '@/lib/atlas-navigation';
 import { advanceExploration, restoreExploration } from '@/lib/reader-progress';
 import { getCampaignRoutes } from '@/lib/campaign-data';
 import { STORY_SITES } from '@/lib/story-data';
-import { DEFAULT_FILTERS, getFilterArcs, getVisibleSites, normalizeFilters, type LandmarkFilters as LandmarkFilterState } from '@/lib/landmark-filters';
+import { DEFAULT_FILTERS, getFilterArcs, getVisibleSites, getMapSites, normalizeFilters, type LandmarkFilters as LandmarkFilterState } from '@/lib/landmark-filters';
 import { DEFAULT_READER_CHAPTER, LATEST_RELEASE_CHAPTER, normalizeChapter } from '@/lib/progression';
 
 type MapCommand = { type: 'reset' | 'zoom-in' | 'zoom-out' | 'focus' | 'site' | 'region' | 'campaign'; id: number; stateId?: StateId; siteId?: string; arcId?:string; point?:Point };
@@ -45,7 +45,7 @@ export default function Atlas() {
   const commandId = useRef(0);
   const selected = STATES.find((state) => state.id === selectedState);
   const effectiveFilters=useMemo(()=>normalizeFilters(filters,exploredChapter),[filters,exploredChapter]);
-  const visibleSites=useMemo(()=>getVisibleSites(exploredChapter,effectiveFilters,showSilhouettes),[exploredChapter,effectiveFilters,showSilhouettes]);
+  const visibleSites=useMemo(()=>getMapSites(exploredChapter,showSilhouettes),[exploredChapter,showSilhouettes]);
   const campaignArcId=effectiveFilters.arc==='all'?(readerArcId??'all'):effectiveFilters.arc;
   const selectedSite=progressReady?visibleSites.find(site=>site.id===selectedSiteId):undefined;
 
@@ -121,7 +121,7 @@ export default function Atlas() {
     setProgressReady(true);
     const value = params.get('state');
     const site=STORY_SITES.find(candidate=>candidate.id===params.get('site'));
-    if(site&&getVisibleSites(read,initialFilters,initialSilhouettes).some(candidate=>candidate.id===site.id)){
+    if(site&&getMapSites(read,initialSilhouettes).some(candidate=>candidate.id===site.id)){
       setSelectedSiteId(site.id);setSelectedState(site.stateId==='multi'?null:site.stateId);
       setCommand({type:'site',id:++commandId.current,siteId:site.id});
     }else if (STATES.some((state) => state.id === value && isStateDiscovered(state.id,read))) {
@@ -134,7 +134,7 @@ export default function Atlas() {
     }
     const url=new URL(window.location.href);writeFilterParams(url,initialFilters);if(!volume)url.searchParams.delete('volume');
     if(params.has('state')&&!STATES.some(state=>state.id===value&&isStateDiscovered(state.id,read)))url.searchParams.delete('state');
-    if(params.has('site')&&!getVisibleSites(read,initialFilters,initialSilhouettes).some(candidate=>candidate.id===params.get('site')))url.searchParams.delete('site');
+    if(params.has('site')&&!getMapSites(read,initialSilhouettes).some(candidate=>candidate.id===params.get('site')))url.searchParams.delete('site');
     window.history.replaceState(null,'',url);
   }, [sendCommand]);
 
@@ -154,7 +154,7 @@ export default function Atlas() {
     setShowSilhouettes(visible);try{localStorage.setItem('kingdom-silhouettes',String(visible));}catch{}
     const url=new URL(window.location.href);url.searchParams.set('spoilers',visible?'silhouettes':'hidden');
     const siteId=url.searchParams.get('site');
-    if(siteId&&!getVisibleSites(exploredChapter,effectiveFilters,visible).some(site=>site.id===siteId)){setSelectedSiteId(null);url.searchParams.delete('site');}
+    if(siteId&&!getMapSites(exploredChapter,visible).some(site=>site.id===siteId)){setSelectedSiteId(null);url.searchParams.delete('site');}
     window.history.replaceState(null,'',url);
   },[exploredChapter,effectiveFilters]);
 
@@ -231,6 +231,7 @@ export default function Atlas() {
               <div><dt><i className="legend-frontier"/>Discovery frontier</dt><dd>The brass line follows your reading progress.</dd></div>
               <div><dt><i className="legend-reader"/>Explored through · {exploredChapter}</dt><dd>Revisiting older stories keeps this frontier revealed.</dd></div>
               <div><dt><i className="legend-arrow"/>Campaign arrows</dt><dd>Selected offensives use the attacking state’s color. Paths are schematic.</dd></div>
+              <div><dt><i className="legend-land"/>Other landmarks</dt><dd>Grey miniatures sit outside the selected arc. You can still open them.</dd></div>
               <div><dt><i className="legend-latest"/>Latest release · {LATEST_RELEASE_CHAPTER}</dt><dd>A configured estimate, rather than a live chapter count.</dd></div>
             </dl>
             <p>A schematic atlas. Borders and terrain are illustrative; distances are not to scale.</p>

@@ -26,7 +26,11 @@ export default function ReaderCard({ site, chapter, arcId, onActiveArcChange, on
   const handleGesture = useRef<{ pointerId: number; startX: number; startY: number; moved: boolean } | null>(null);
   const suppressHandleClick = useRef(false);
   const tabButtons = useRef<(HTMLButtonElement | null)[]>([]);
-  const availableArcs = useMemo(() => getSiteArcs(site.id, chapter).filter((arc) => !arcId || arcId === 'all' || arc.id === arcId), [site.id, chapter, arcId]);
+  const availableArcs = useMemo(() => {
+    const known = getSiteArcs(site.id, chapter);
+    const focused = known.filter(arc => arc.id === arcId);
+    return focused.length ? focused : known;
+  }, [site.id, chapter, arcId]);
   const [activeArcId, setActiveArcId] = useState(availableArcs.at(-1)?.id);
   const [tab, setTab] = useState<ReaderTab>('Overview');
   const [portrait, setPortrait] = useState<{ character: AtlasCharacter; launch: number } | null>(null);

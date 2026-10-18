@@ -19,7 +19,9 @@
 .story:hover, .selectedStory, .hoveredStory { background:#34413e; border-color:#e5ca8f; color:#fff0ce; z-index:3; }
 .story { transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease; }
 .hoverTooltip { position:absolute; top:0; left:0; z-index:5; padding:7px 10px; border:1px solid #d4b77a; border-radius:4px; background:#111d22ed; color:#f1dfb8; font:11px var(--font-ui); box-shadow:0 4px 18px #0005; white-space:nowrap; pointer-events:none; }
-.story.compactStory { width:27px; height:27px; min-height:27px; padding:0; justify-content:center; border-radius:50%; }
+.story.compactStory { width:32px; height:32px; min-height:32px; padding:0; justify-content:center; border-radius:50%; }
+.story.mutedStory, .capital.mutedStory { color:#b2b9b6; border-color:#87928c77; background:#26302fe6; filter:grayscale(1); opacity:.6 !important; }
+.story.mutedStory:hover, .story.mutedStory:focus-visible, .capital.mutedStory:hover, .capital.mutedStory:focus-visible { opacity:1 !important; background:#3b4641; }
 .compactStory b { display:none; }
 .compactStory:hover b, .compactStory:focus-visible b { display:block; position:absolute; bottom:34px; left:50%; transform:translateX(-50%); padding:7px 9px; border:1px solid #b8a17488; border-radius:3px; background:#172126; color:#eee0be; box-shadow:0 3px 12px #0004; pointer-events:none; }
 .story[data-major='true'] { border-color:#dbc18c; }

@@ -43,6 +43,15 @@ try {
   const raycaster = new THREE.Raycaster();
   const downward = new THREE.Vector3(0, -1, 0);
   const surfaces = [...map.stateMeshes.values()];
+  const tileBase=map.group.getObjectByName('realm-base') as THREE.Mesh;
+  assert(tileBase, 'The atlas has a bounded realm tile');
+  assert(!map.group.getObjectByName('context-base'), 'The oversized plain must not return');
+  map.group.updateMatrixWorld(true);
+  for(const point of [[2,20],[40,3],[95,40],[60,77],[120,30]] as Point[]){
+    const position=mapWorldPoint(point);
+    raycaster.set(new THREE.Vector3(position.x,100,position.z),downward);
+    assert.equal(raycaster.intersectObjects([tileBase,...surfaces],false).length,0,`No empty plains outside the realm at ${point}`);
+  }
   for (const relief of [true, false]) {
     map.setRelief(relief);
     map.group.updateMatrixWorld(true);

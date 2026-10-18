@@ -39,3 +39,8 @@ export function getVisibleSites(chapter: number, filters: LandmarkFilters, showS
     && matchesSiteFilters(site, filters, chapter)
     && (showSilhouettes || isDiscovered(site.position, chapter)));
 }
+
+/** Arc selection changes emphasis, while every chapter-safe landmark stays on the map. */
+export function getMapSites(chapter: number, showSilhouettes: boolean): StorySite[] {
+  return getVisibleSites(chapter, DEFAULT_FILTERS, showSilhouettes);
+}

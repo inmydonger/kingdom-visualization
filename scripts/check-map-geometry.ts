@@ -5,8 +5,8 @@ import { buildMap } from "../lib/map-geometry";
 const map = buildMap();
 map.group.updateMatrixWorld(true);
 const terrain = map.group.children[0] as THREE.Group;
-// The background plane is below the sampled mainland; state surfaces overlay it.
-const mainland = terrain.children[1];
+// The tile base ends at the realm outline; state surfaces overlay its narrow lip.
+const mainland = terrain.getObjectByName('realm-base');
 assert(mainland instanceof THREE.Mesh, "Expected the sampled mainland surface");
 const surfaces = [mainland, ...map.stateMeshes.values()];
 for (const mesh of surfaces) mesh.geometry.computeBoundingBox();

@@ -11,7 +11,7 @@ npm run dev
 
 Open the local URL printed by Next.js. Drag to pan, scroll or pinch to zoom, and choose a state or capital to focus the camera. Focus the canvas for arrow-key panning, `+`/`-` zoom, and `Home` to reset.
 
-The landscape spans 2.5 times its original width and depth while miniatures retain their original dimensions. The opening view is closer, and landmark focus and the zoom range cover the expanded world. Compact pins reveal their names on hover or focus; close views show full labels.
+The landscape spans 2.5 times its original width and depth, with landmark miniatures enlarged by 70% for legibility. The tile ends at the combined seven-state outline, with a narrow stone lip and relief edge instead of empty plains extending beyond the realm. The centered opening view and minimum zoom keep the realm prominent. Compact pins reveal their names on hover or focus; close views show full labels.
 
 ## Motion, orientation, and reading
 
@@ -39,7 +39,7 @@ To open Gyou directly in the local preview, use [chapter 845 at Gyou](http://127
 
 The chapter button floats at the top center, with one **Story arc** picker directly below it. Choose a revealed arc to focus its landmark, or **All story arcs** to restore the available map. The picker includes only started stories at discovered locations. Arc choices use the furthest chapter you have read; revisiting an earlier chapter does not lock already-known stories again. The Seven States dock, state filter, filter menu, and Layers control have been removed; relief and place labels remain enabled.
 
-Filtering to one arc at a shared location shows only that arc in its reader card. For example, **Conquest of Han** keeps the Shintei miniature and excludes its earlier **Nature of Humanity** story from the filtered card. The URL stores the selection as `arc=arcID`; legacy `filter` parameters are cleared. State selection on the map still focuses a territory without filtering landmarks.
+Selecting an arc highlights its landmark and greys the other discovered miniatures and pins. Those grey landmarks remain clickable and open their own chapter-safe reader cards. At the selected arc's shared location, the card shows that arc alone; for example, **Conquest of Han** opens its Shintei story. Clearing the selection restores every miniature's colors. The URL stores the selection as `arc=arcID`; legacy `filter` parameters are cleared. State selection on the map still focuses a territory without filtering landmarks.
 
 The brand is an unboxed wordmark on desktop and a small seal on phones. Cast, map help, and legend use vertically stacked icon buttons with accessible labels and hover titles. The legend is closed by default and light-dismisses on outside click or Escape. There is no persistent heading, legend, scale note, or first-use panel over the terrain.
 
@@ -62,7 +62,7 @@ Volume travel only chooses arcs already started at the volume’s first chapter.
 
 Open **Your chapter** to enter the last chapter you have read and choose **Apply chapter**. The default is chapter **845**. Your reading position, furthest explored chapter, and unexplored-area preference are saved in this browser; the `?chapter=100` URL parameter overrides the saved chapter for that visit. Chapter changes update the URL. Exploration is monotonic: lowering the chapter, switching arcs, choosing a volume, or reloading cannot cover previously discovered ground. New chapter progress expands the revealed area. First-time readers still begin at their chosen chapter, and existing saved chapter progress is migrated.
 
-Discovered terrain retains its color. Under **Unexplored areas**, choose **Faint silhouettes** for grey terrain and unnamed shapes beyond your chapter, or **Fully hidden** to hide unreached terrain, names, and markers. Capital models follow terrain discovery, while story pins also obey their reading gates and active filters. The **Your chapter** marker follows your frontier, while the muted **Latest release** marker shows the configured latest point when its area is visible.
+Discovered terrain retains its color. Under **Unexplored areas**, choose **Faint silhouettes** for grey terrain and unnamed shapes beyond your chapter, or **Fully hidden** to hide unreached terrain, names, and markers. Capital models follow terrain discovery, while story pins obey their reading gates; arc choices change emphasis rather than hiding known places. The **Your chapter** marker follows your frontier, while the muted **Latest release** marker shows the configured latest point when its area is visible.
 
 The unexplored-area preference is stored under `kingdom-silhouettes`. A URL parameter overrides that saved mode: `spoilers=silhouettes` shows faint shapes, while `spoilers=hidden` fully hides unexplored areas. The current reading position is stored under `kingdom-reader-chapter`, while `kingdom-explored-chapter` records the furthest explored chapter. Fog, story gates, character gates, and territory changes use that saved maximum; the chapter input can revisit an earlier position. The legend and reader settings display the saved exploration limit.
 
